@@ -21,6 +21,55 @@ public partial class MainWindow : Window
                 CurrentUserName = $"Logged in as: {SessionManager.CurrentEmployee.FullName} (#{SessionManager.CurrentEmployee.EmployeeNumber})"
             };
         }
+        
+        // Set DataContext for Dealers view
+        DealersView.DataContext = App.GetService<ViewModels.DealerManagementViewModel>();
+    }
+
+    private void ShowDashboard_Click(object sender, RoutedEventArgs e)
+    {
+        ShowView("Dashboard");
+    }
+
+    private void ShowDealers_Click(object sender, RoutedEventArgs e)
+    {
+        ShowView("Dealers");
+    }
+
+    private void ShowTables_Click(object sender, RoutedEventArgs e)
+    {
+        ShowView("Tables");
+    }
+
+    private void ShowAnalytics_Click(object sender, RoutedEventArgs e)
+    {
+        ShowView("Analytics");
+    }
+
+    private void ShowView(string viewName)
+    {
+        // Hide all views
+        DashboardView.Visibility = Visibility.Collapsed;
+        DealersView.Visibility = Visibility.Collapsed;
+        TablesView.Visibility = Visibility.Collapsed;
+        AnalyticsView.Visibility = Visibility.Collapsed;
+
+        // Show selected view
+        switch (viewName)
+        {
+            case "Dashboard":
+                DashboardView.Visibility = Visibility.Visible;
+                break;
+            case "Dealers":
+                DealersView.Visibility = Visibility.Visible;
+                break;
+            case "Tables":
+                TablesView.Visibility = Visibility.Visible;
+                break;
+            case "Analytics":
+                AnalyticsView.Visibility = Visibility.Visible;
+                break;
+        }
     }
 
     private async void Logout_Click(object sender, RoutedEventArgs e)

@@ -21,6 +21,9 @@ public class LoginViewModel : ViewModelBase
         _auditService = auditService;
     }
 
+    // Event to notify when login succeeds
+    public event EventHandler<string>? LoginSucceeded;
+
     private string _employeeNumber = string.Empty;
     public string EmployeeNumber
     {
@@ -75,23 +78,8 @@ public class LoginViewModel : ViewModelBase
             // Store current user session
             SessionManager.CurrentEmployee = employee;
 
-            // Open main window
-            try
-            {
-                var mainWindow = new MainWindow();
-                mainWindow.Show();
-
-                // Close login window
-                var loginWindow = Application.Current.Windows.OfType<LoginWindow>().FirstOrDefault();
-                loginWindow?.Close();
-            }
-            catch (Exception mainWindowEx)
-            {
-                ErrorMessage = $"Failed to open main window: {mainWindowEx.Message}";
-                IsLoading = false;
-                SessionManager.Logout();
-                return;
-            }
+            // Fire event to notify success (UI will handle the transition)
+            LoginSucceeded?.Invoke(this, employee.FullName);
         }
         catch (Exception ex)
         {

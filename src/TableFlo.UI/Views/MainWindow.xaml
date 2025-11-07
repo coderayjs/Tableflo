@@ -42,24 +42,31 @@
                                VerticalAlignment="Center"/>
                 </StackPanel>
                 
-                <!-- Navigation (Placeholder) -->
+                <!-- Navigation -->
                 <StackPanel Grid.Column="1" 
                             Orientation="Horizontal" 
                             HorizontalAlignment="Center">
-                    <Button Content="Dashboard" 
+                    <Button x:Name="DashboardButton"
+                            Content="Dashboard" 
                             Style="{StaticResource SecondaryButton}"
+                            Click="ShowDashboard_Click"
                             Margin="5,0"/>
-                    <Button Content="Dealers" 
+                    <Button x:Name="DealersButton"
+                            Content="Dealers" 
                             Style="{StaticResource SecondaryButton}"
+                            Click="ShowDealers_Click"
                             Margin="5,0"/>
-                    <Button Content="Tables" 
+                    <Button x:Name="TablesButton"
+                            Content="Tables" 
                             Style="{StaticResource SecondaryButton}"
+                            Click="ShowTables_Click"
                             Margin="5,0"/>
-                    <Button Content="Analytics" 
+                    <Button x:Name="AnalyticsButton"
+                            Content="Analytics" 
                             Style="{StaticResource SecondaryButton}"
+                            Click="ShowAnalytics_Click"
                             Margin="5,0"/>
-                </StackPanel>
-                
+                </StackPanel>                
                 <!-- User Info -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
                     <TextBlock Text="{Binding CurrentUserName}" 
@@ -257,6 +264,278 @@
                             </StackPanel>
                         </Border>
                     </Grid>
+                </Border>
+            </Grid>
+            
+            <!-- Dealers View (REAL FUNCTIONALITY) -->
+            <Grid x:Name="DealersView" Margin="20" Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                
+                <!-- Dealers List -->
+                <Border Grid.Column="0"
+                        Background="{StaticResource BackgroundPanelBrush}"
+                        BorderBrush="{StaticResource LineBrush}"
+                        BorderThickness="1"
+                        CornerRadius="12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        
+                        <!-- Header -->
+                        <Border Grid.Row="0"
+                                BorderBrush="{StaticResource LineBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="14,12">
+                            <Grid>
+                                <TextBlock Text="Dealer Management" 
+                                           FontSize="16" 
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           VerticalAlignment="Center"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Content="➕ Add Dealer"
+                                            Style="{StaticResource PrimaryButton}"
+                                            Command="{Binding AddDealerCommand}"
+                                            Margin="0,0,10,0"/>
+                                    <Button Content="🔄 Refresh"
+                                            Style="{StaticResource SecondaryButton}"
+                                            Command="{Binding RefreshCommand}"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        
+                        <!-- Dealers DataGrid -->
+                        <DataGrid Grid.Row="1"
+                                  ItemsSource="{Binding Dealers}"
+                                  SelectedItem="{Binding SelectedDealer}"
+                                  Style="{StaticResource ModernDataGrid}"
+                                  ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}"
+                                  CellStyle="{StaticResource DataGridCellStyle}"
+                                  Margin="10">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Emp #" Binding="{Binding EmployeeNumber}" Width="80"/>
+                                <DataGridTextColumn Header="Name" Binding="{Binding FullName}" Width="150"/>
+                                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="100"/>
+                                <DataGridTextColumn Header="Seniority" Binding="{Binding SeniorityLevel}" Width="80"/>
+                                <DataGridTextColumn Header="Pit" Binding="{Binding PreferredPit}" Width="100"/>
+                                <DataGridTextColumn Header="Shift" Binding="{Binding ShiftStart}" Width="70"/>
+                                <DataGridTextColumn Header="Certifications" Binding="{Binding Certifications}" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+                
+                <!-- Edit Panel -->
+                <Border Grid.Column="2"
+                        Background="{StaticResource BackgroundPanelBrush}"
+                        BorderBrush="{StaticResource LineBrush}"
+                        BorderThickness="1"
+                        CornerRadius="12"
+                        Padding="20">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <!-- Show when editing -->
+                            <StackPanel Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <TextBlock Text="{Binding IsNewDealer, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Add New Dealer|Edit Dealer'}" 
+                                           FontSize="18" 
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           Margin="0,0,0,20"/>
+                                
+                                <!-- Employee Number -->
+                                <TextBlock Text="Employee Number *" 
+                                           FontSize="12"
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           Margin="0,0,0,5"/>
+                                <TextBox Text="{Binding EmployeeNumber, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource ModernTextBox}"
+                                         IsEnabled="{Binding IsNewDealer}"
+                                         Margin="0,0,0,15"/>
+                                
+                                <!-- First Name -->
+                                <TextBlock Text="First Name *" 
+                                           FontSize="12"
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           Margin="0,0,0,5"/>
+                                <TextBox Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,0,15"/>
+                                
+                                <!-- Last Name -->
+                                <TextBlock Text="Last Name *" 
+                                           FontSize="12"
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           Margin="0,0,0,5"/>
+                                <TextBox Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,0,15"/>
+                                
+                                <!-- Password (only for new) -->
+                                <StackPanel Visibility="{Binding IsNewDealer, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <TextBlock Text="Password *" 
+                                               FontSize="12"
+                                               Foreground="{StaticResource TextMutedBrush}"
+                                               Margin="0,0,0,5"/>
+                                    <TextBox Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource ModernTextBox}"
+                                             Margin="0,0,0,15"/>
+                                </StackPanel>
+                                
+                                <!-- Seniority -->
+                                <TextBlock Text="Seniority Level" 
+                                           FontSize="12"
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           Margin="0,0,0,5"/>
+                                <TextBox Text="{Binding SeniorityLevel, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,0,15"/>
+                                
+                                <!-- Preferred Pit -->
+                                <TextBlock Text="Preferred Pit" 
+                                           FontSize="12"
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           Margin="0,0,0,5"/>
+                                <TextBox Text="{Binding PreferredPit, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,0,15"/>
+                                
+                                <!-- Certifications -->
+                                <TextBlock Text="Certifications" 
+                                           FontSize="14"
+                                           FontWeight="SemiBold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           Margin="0,10,0,10"/>
+                                
+                                <CheckBox Content="Blackjack" 
+                                          IsChecked="{Binding HasBlackjack}"
+                                          Margin="0,0,0,8"/>
+                                <CheckBox Content="Roulette" 
+                                          IsChecked="{Binding HasRoulette}"
+                                          Margin="0,0,0,8"/>
+                                <CheckBox Content="Craps" 
+                                          IsChecked="{Binding HasCraps}"
+                                          Margin="0,0,0,8"/>
+                                <CheckBox Content="Pai Gow" 
+                                          IsChecked="{Binding HasPaiGow}"
+                                          Margin="0,0,0,8"/>
+                                <CheckBox Content="Baccarat" 
+                                          IsChecked="{Binding HasBaccarat}"
+                                          Margin="0,0,0,20"/>
+                                
+                                <!-- Action Buttons -->
+                                <Button Content="💾 Save"
+                                        Style="{StaticResource PrimaryButton}"
+                                        Command="{Binding SaveDealerCommand}"
+                                        Margin="0,0,0,10"/>
+                                <Button Content="✖ Cancel"
+                                        Style="{StaticResource SecondaryButton}"
+                                        Command="{Binding CancelEditCommand}"/>
+                            </StackPanel>
+                            
+                            <!-- Show when not editing -->
+                            <StackPanel>
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsEditing}" Value="False">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <TextBlock Text="Dealer Actions" 
+                                           FontSize="18" 
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           Margin="0,0,0,20"/>
+                                
+                                <Button Content="✏️ Edit Selected"
+                                        Style="{StaticResource PrimaryButton}"
+                                        Command="{Binding EditDealerCommand}"
+                                        Margin="0,0,0,10"/>
+                                <Button Content="🗑️ Delete Selected"
+                                        Style="{StaticResource SecondaryButton}"
+                                        Command="{Binding DeleteDealerCommand}"/>
+                                
+                                <TextBlock Text="Select a dealer from the list to edit or delete."
+                                           FontSize="12"
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           TextWrapping="Wrap"
+                                           Margin="0,20,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+            
+            <!-- Tables View (Placeholder) -->
+            <Grid x:Name="TablesView" Margin="20" Visibility="Collapsed">
+                <Border Background="{StaticResource BackgroundPanelBrush}"
+                        BorderBrush="{StaticResource LineBrush}"
+                        BorderThickness="1"
+                        CornerRadius="12"
+                        Padding="40">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock Text="🎰" 
+                                   FontSize="72"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,20"/>
+                        <TextBlock Text="Table Management" 
+                                   FontSize="28" 
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,10"/>
+                        <TextBlock Text="Configure game tables, limits, and crew requirements" 
+                                   FontSize="14" 
+                                   Foreground="{StaticResource TextMutedBrush}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,20"/>
+                        <TextBlock Text="Coming Soon" 
+                                   FontSize="16" 
+                                   FontWeight="SemiBold"
+                                   Foreground="#D4A574"
+                                   HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+            
+            <!-- Analytics View (Placeholder) -->
+            <Grid x:Name="AnalyticsView" Margin="20" Visibility="Collapsed">
+                <Border Background="{StaticResource BackgroundPanelBrush}"
+                        BorderBrush="{StaticResource LineBrush}"
+                        BorderThickness="1"
+                        CornerRadius="12"
+                        Padding="40">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock Text="📊" 
+                                   FontSize="72"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,20"/>
+                        <TextBlock Text="Analytics Dashboard" 
+                                   FontSize="28" 
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,10"/>
+                        <TextBlock Text="View performance metrics, rotation fairness, and trends" 
+                                   FontSize="14" 
+                                   Foreground="{StaticResource TextMutedBrush}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,20"/>
+                        <TextBlock Text="Coming Soon" 
+                                   FontSize="16" 
+                                   FontWeight="SemiBold"
+                                   Foreground="#D4A574"
+                                   HorizontalAlignment="Center"/>
+                    </StackPanel>
                 </Border>
             </Grid>
         </Grid>

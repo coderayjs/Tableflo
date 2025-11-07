@@ -15,6 +15,8 @@
             <!-- Converters -->
             <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <local:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+            <local:InverseBoolConverter x:Key="InverseBoolConverter"/>
+            <local:BoolToStringConverter x:Key="BoolToStringConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

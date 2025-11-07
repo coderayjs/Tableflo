@@ -299,5 +299,103 @@
                 </Button.Style>
             </Button>
         </Grid>
+        
+        <!-- Loading Overlay -->
+        <Grid x:Name="LoadingOverlay"
+              Background="#CC000000"
+              Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Border Background="#1E293B"
+                    BorderBrush="#D4A574"
+                    BorderThickness="2"
+                    CornerRadius="15"
+                    Padding="40"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    MinWidth="300">
+                <StackPanel>
+                    <!-- Spinning Loader -->
+                    <Grid Width="60" Height="60" Margin="0,0,0,20">
+                        <Ellipse Width="60" Height="60"
+                                 Stroke="#D4A574"
+                                 StrokeThickness="4"
+                                 Opacity="0.3"/>
+                        <Ellipse Width="60" Height="60"
+                                 Stroke="#D4A574"
+                                 StrokeThickness="4"
+                                 StrokeDashArray="40 160"
+                                 x:Name="SpinnerEllipse"
+                                 RenderTransformOrigin="0.5,0.5">
+                            <Ellipse.RenderTransform>
+                                <RotateTransform x:Name="SpinnerRotate" Angle="0"/>
+                            </Ellipse.RenderTransform>
+                            <Ellipse.Triggers>
+                                <EventTrigger RoutedEvent="Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard RepeatBehavior="Forever">
+                                            <DoubleAnimation Storyboard.TargetName="SpinnerRotate"
+                                                           Storyboard.TargetProperty="Angle"
+                                                           From="0" To="360"
+                                                           Duration="0:0:1.5"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Ellipse.Triggers>
+                        </Ellipse>
+                    </Grid>
+                    
+                    <TextBlock Text="Authenticating..."
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,8"/>
+                    <TextBlock Text="Please wait while we verify your credentials"
+                               FontSize="12"
+                               Foreground="#94A3B8"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+        
+        <!-- Success Overlay -->
+        <Grid x:Name="SuccessOverlay"
+              Background="#CC000000"
+              Visibility="Collapsed">
+            <Border Background="#1E293B"
+                    BorderBrush="#10B981"
+                    BorderThickness="2"
+                    CornerRadius="15"
+                    Padding="40"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    MinWidth="300">
+                <StackPanel>
+                    <!-- Success Icon -->
+                    <Grid Width="60" Height="60" Margin="0,0,0,20">
+                        <Ellipse Width="60" Height="60"
+                                 Fill="#10B981"
+                                 Opacity="0.2"/>
+                        <TextBlock Text="✓"
+                                   FontSize="36"
+                                   FontWeight="Bold"
+                                   Foreground="#10B981"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Grid>
+                    
+                    <TextBlock Text="Login Successful!"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Foreground="#10B981"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,8"/>
+                    <TextBlock x:Name="WelcomeText"
+                               Text="Welcome back!"
+                               FontSize="13"
+                               Foreground="#94A3B8"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </Grid>
     </Border>
 </Window>
