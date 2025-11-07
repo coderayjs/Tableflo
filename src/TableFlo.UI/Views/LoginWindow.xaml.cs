@@ -24,6 +24,8 @@ public partial class LoginWindow : Window
         var viewModel = DataContext as LoginViewModel;
         if (viewModel != null)
         {
+            // Get password from PasswordBox
+            viewModel.Password = PasswordBox.Password;
             await viewModel.LoginAsync();
         }
     }

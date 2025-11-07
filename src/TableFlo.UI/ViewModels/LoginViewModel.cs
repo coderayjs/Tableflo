@@ -42,6 +42,13 @@ public class LoginViewModel : ViewModelBase
         set => SetProperty(ref _isLoading, value);
     }
 
+    private string _password = string.Empty;
+    public string Password
+    {
+        get => _password;
+        set => SetProperty(ref _password, value);
+    }
+
     public async Task LoginAsync()
     {
         IsLoading = true;
@@ -49,8 +56,7 @@ public class LoginViewModel : ViewModelBase
 
         try
         {
-            // For demo purposes, using a simple password. In production, this would come from PasswordBox
-            var employee = await _authService.AuthenticateAsync(EmployeeNumber, "admin123");
+            var employee = await _authService.AuthenticateAsync(EmployeeNumber, Password);
 
             if (employee == null)
             {
