@@ -54,8 +54,8 @@ public class DealerManagementViewModel : ViewModelBase
         set
         {
             SetProperty(ref _selectedDealer, value);
-            ((RelayCommand)EditDealerCommand).NotifyCanExecuteChanged();
-            ((RelayCommand)DeleteDealerCommand).NotifyCanExecuteChanged();
+            (EditDealerCommand as RelayCommand)?.NotifyCanExecuteChanged();
+            (DeleteDealerCommand as RelayCommand)?.NotifyCanExecuteChanged();
         }
     }
 
@@ -265,7 +265,7 @@ public class DealerManagementViewModel : ViewModelBase
                 var dealer = await _unitOfWork.Dealers.GetByIdAsync(SelectedDealer.Id);
                 if (dealer != null)
                 {
-                    await _unitOfWork.Dealers.DeleteAsync(dealer.Id);
+                    await _unitOfWork.Dealers.DeleteAsync(dealer);
                     await _unitOfWork.SaveChangesAsync();
 
                     // Audit log
@@ -324,35 +324,35 @@ public class DealerManagementViewModel : ViewModelBase
                 if (HasBlackjack) dealer.Certifications.Add(new DealerCertification 
                 { 
                     GameType = GameType.Blackjack, 
-                    ProficiencyLevel = ProficiencyLevel.Proficient,
+                    ProficiencyLevel = ProficiencyLevel.Intermediate,
                     CertifiedDate = DateTime.UtcNow,
                     IsActive = true
                 });
                 if (HasRoulette) dealer.Certifications.Add(new DealerCertification 
                 { 
                     GameType = GameType.Roulette, 
-                    ProficiencyLevel = ProficiencyLevel.Proficient,
+                    ProficiencyLevel = ProficiencyLevel.Intermediate,
                     CertifiedDate = DateTime.UtcNow,
                     IsActive = true
                 });
                 if (HasCraps) dealer.Certifications.Add(new DealerCertification 
                 { 
                     GameType = GameType.Craps, 
-                    ProficiencyLevel = ProficiencyLevel.Proficient,
+                    ProficiencyLevel = ProficiencyLevel.Intermediate,
                     CertifiedDate = DateTime.UtcNow,
                     IsActive = true
                 });
                 if (HasPaiGow) dealer.Certifications.Add(new DealerCertification 
                 { 
                     GameType = GameType.PaiGow, 
-                    ProficiencyLevel = ProficiencyLevel.Proficient,
+                    ProficiencyLevel = ProficiencyLevel.Intermediate,
                     CertifiedDate = DateTime.UtcNow,
                     IsActive = true
                 });
                 if (HasBaccarat) dealer.Certifications.Add(new DealerCertification 
                 { 
                     GameType = GameType.Baccarat, 
-                    ProficiencyLevel = ProficiencyLevel.Proficient,
+                    ProficiencyLevel = ProficiencyLevel.Intermediate,
                     CertifiedDate = DateTime.UtcNow,
                     IsActive = true
                 });
@@ -362,7 +362,7 @@ public class DealerManagementViewModel : ViewModelBase
 
                 await _auditService.LogActionAsync(
                     SessionManager.CurrentEmployee?.Id ?? 0,
-                    ActionType.DealerAdded,
+                    ActionType.DealerAssigned,
                     $"Added new dealer: {FirstName} {LastName}"
                 );
 
@@ -387,7 +387,7 @@ public class DealerManagementViewModel : ViewModelBase
                     { 
                         DealerId = dealer.Id,
                         GameType = GameType.Blackjack, 
-                        ProficiencyLevel = ProficiencyLevel.Proficient,
+                        ProficiencyLevel = ProficiencyLevel.Intermediate,
                         CertifiedDate = DateTime.UtcNow,
                         IsActive = true
                     });
@@ -395,7 +395,7 @@ public class DealerManagementViewModel : ViewModelBase
                     { 
                         DealerId = dealer.Id,
                         GameType = GameType.Roulette, 
-                        ProficiencyLevel = ProficiencyLevel.Proficient,
+                        ProficiencyLevel = ProficiencyLevel.Intermediate,
                         CertifiedDate = DateTime.UtcNow,
                         IsActive = true
                     });
@@ -403,7 +403,7 @@ public class DealerManagementViewModel : ViewModelBase
                     { 
                         DealerId = dealer.Id,
                         GameType = GameType.Craps, 
-                        ProficiencyLevel = ProficiencyLevel.Proficient,
+                        ProficiencyLevel = ProficiencyLevel.Intermediate,
                         CertifiedDate = DateTime.UtcNow,
                         IsActive = true
                     });
@@ -411,7 +411,7 @@ public class DealerManagementViewModel : ViewModelBase
                     { 
                         DealerId = dealer.Id,
                         GameType = GameType.PaiGow, 
-                        ProficiencyLevel = ProficiencyLevel.Proficient,
+                        ProficiencyLevel = ProficiencyLevel.Intermediate,
                         CertifiedDate = DateTime.UtcNow,
                         IsActive = true
                     });
@@ -419,7 +419,7 @@ public class DealerManagementViewModel : ViewModelBase
                     { 
                         DealerId = dealer.Id,
                         GameType = GameType.Baccarat, 
-                        ProficiencyLevel = ProficiencyLevel.Proficient,
+                        ProficiencyLevel = ProficiencyLevel.Intermediate,
                         CertifiedDate = DateTime.UtcNow,
                         IsActive = true
                     });
