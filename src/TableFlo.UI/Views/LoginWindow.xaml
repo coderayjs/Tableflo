@@ -6,83 +6,275 @@
         xmlns:vm="clr-namespace:TableFlo.UI.ViewModels"
         mc:Ignorable="d"
         Title="TableFlo - Login" 
-        Height="600" Width="900"
+        Height="700" Width="1100"
         WindowStartupLocation="CenterScreen"
-        Background="{StaticResource BackgroundDarkBrush}"
+        Background="Transparent"
         ResizeMode="NoResize"
         WindowStyle="None"
         AllowsTransparency="True">
     
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="400"/>
-        </Grid.ColumnDefinitions>
+    <Border CornerRadius="15" Background="White">
+        <Border.Effect>
+            <DropShadowEffect Color="Black" Opacity="0.3" BlurRadius="30" ShadowDepth="0"/>
+        </Border.Effect>
         
-        <!-- Left Side - Branding -->
-        <Grid Grid.Column="0" Background="{StaticResource BackgroundPanelBrush}">
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <!-- TableFlo Logo -->
-                <Image Source="/Assets/tabflowlogo.png" 
-                       Width="180" Height="180" 
-                       Margin="0,0,0,30"
-                       RenderOptions.BitmapScalingMode="HighQuality"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="480"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- Left Side - Login Form (White) -->
+            <Grid Grid.Column="0" Background="White">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
                 
-                <TextBlock Text="TableFlo" 
-                           FontSize="48" 
-                           FontWeight="Bold"
-                           Foreground="{StaticResource AccentGoldBrush}"
-                           HorizontalAlignment="Center"
-                           Margin="0,0,0,10"/>
+                <!-- Logo Header -->
+                <StackPanel Grid.Row="0" Margin="50,40,50,30">
+                    <Image Source="/Assets/tabflowlogo.png" 
+                           Width="60" Height="60" 
+                           HorizontalAlignment="Left"
+                           RenderOptions.BitmapScalingMode="HighQuality"/>
+                </StackPanel>
                 
-                <TextBlock Text="The Casino Workforce" 
-                           FontSize="18" 
-                           Foreground="{StaticResource TextPrimaryBrush}"
-                           HorizontalAlignment="Center"/>
+                <!-- Login Form -->
+                <StackPanel Grid.Row="1" Margin="50,0,50,50" VerticalAlignment="Center">
+                    <TextBlock Text="Login to TableFlo" 
+                               FontSize="32" 
+                               FontWeight="Bold"
+                               Foreground="#1A1A1A"
+                               Margin="0,0,0,10"/>
+                    
+                    <TextBlock Text="Manage your casino dealer floor operations smartly" 
+                               FontSize="14" 
+                               Foreground="#6B7280"
+                               Margin="0,0,0,40"/>
+                    
+                    <!-- Employee Number -->
+                    <TextBlock Text="Employee Number" 
+                               FontSize="13" 
+                               FontWeight="SemiBold"
+                               Foreground="#374151"
+                               Margin="0,0,0,8"/>
+                    
+                    <Border Background="#F9FAFB" 
+                            BorderBrush="#E5E7EB" 
+                            BorderThickness="1" 
+                            CornerRadius="8"
+                            Height="48"
+                            Margin="0,0,0,24">
+                        <TextBox Text="{Binding EmployeeNumber, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="Transparent"
+                                 Foreground="#1F2937"
+                                 BorderThickness="0"
+                                 Padding="14,0"
+                                 VerticalContentAlignment="Center"
+                                 FontSize="14"
+                                 CaretBrush="#D4A574"/>
+                    </Border>
+                    
+                    <!-- Password -->
+                    <TextBlock Text="Password" 
+                               FontSize="13" 
+                               FontWeight="SemiBold"
+                               Foreground="#374151"
+                               Margin="0,0,0,8"/>
+                    
+                    <Border Background="#F9FAFB" 
+                            BorderBrush="#E5E7EB" 
+                            BorderThickness="1" 
+                            CornerRadius="8"
+                            Height="48"
+                            Margin="0,0,0,30">
+                        <PasswordBox x:Name="PasswordBox"
+                                     Background="Transparent"
+                                     Foreground="#1F2937"
+                                     BorderThickness="0"
+                                     Padding="14,0"
+                                     VerticalContentAlignment="Center"
+                                     FontSize="14"
+                                     CaretBrush="#D4A574"/>
+                    </Border>
+                    
+                    <!-- Error Message -->
+                    <TextBlock Text="{Binding ErrorMessage}" 
+                               Foreground="#DC2626"
+                               FontSize="13"
+                               Margin="0,0,0,20"
+                               TextWrapping="Wrap"
+                               Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}"/>
+                    
+                    <!-- Login Button -->
+                    <Button Content="Login" 
+                            Click="SignIn_Click"
+                            Background="#D4A574"
+                            Foreground="White"
+                            BorderThickness="0"
+                            Height="48"
+                            FontSize="15"
+                            FontWeight="SemiBold"
+                            Cursor="Hand"
+                            Margin="0,0,0,20">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="#D4A574"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    CornerRadius="8">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#E5B685"/>
+                                    </Trigger>
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter Property="Opacity" Value="0.9"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    
+                    <!-- Demo Info -->
+                    <Border Background="#FEF3C7" 
+                            BorderBrush="#FCD34D" 
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="15">
+                        <StackPanel>
+                            <TextBlock Text="🔑 Demo Credentials" 
+                                       FontSize="12" 
+                                       FontWeight="SemiBold"
+                                       Foreground="#92400E"
+                                       Margin="0,0,0,8"/>
+                            <TextBlock Text="Employee #: ADMIN001" 
+                                       FontSize="11" 
+                                       Foreground="#78350F"/>
+                            <TextBlock Text="Password: admin123" 
+                                       FontSize="11" 
+                                       Foreground="#78350F"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+            
+            <!-- Right Side - Branding (Dark with Graphics) -->
+            <Grid Grid.Column="1">
+                <Grid.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#0F1419" Offset="0"/>
+                        <GradientStop Color="#1A2332" Offset="1"/>
+                    </LinearGradientBrush>
+                </Grid.Background>
                 
-                <TextBlock Text="Automation Engine" 
-                           FontSize="18" 
-                           Foreground="{StaticResource TextPrimaryBrush}"
-                           HorizontalAlignment="Center"
-                           Margin="0,0,0,30"/>
-                
-                <TextBlock Text="AI-powered dealer rotations, break scheduling," 
-                           FontSize="13" 
-                           Foreground="{StaticResource TextMutedBrush}"
-                           HorizontalAlignment="Center"
-                           TextWrapping="Wrap"
-                           TextAlignment="Center"
-                           MaxWidth="300"/>
-                
-                <TextBlock Text="skill tracking, and real-time compliance —" 
-                           FontSize="13" 
-                           Foreground="{StaticResource TextMutedBrush}"
-                           HorizontalAlignment="Center"
-                           TextWrapping="Wrap"
-                           TextAlignment="Center"
-                           MaxWidth="300"/>
-                
-                <TextBlock Text="built specifically for casinos." 
-                           FontSize="13" 
-                           Foreground="{StaticResource TextMutedBrush}"
-                           HorizontalAlignment="Center"
-                           TextWrapping="Wrap"
-                           TextAlignment="Center"
-                           MaxWidth="300"/>
-            </StackPanel>
-        </Grid>
-        
-        <!-- Right Side - Login Form -->
-        <Grid Grid.Column="1" Background="{StaticResource BackgroundDarkBrush}">
-            <!-- Close Button -->
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="60">
+                    <!-- Large Logo -->
+                    <Image Source="/Assets/tabflowlogo.png" 
+                           Width="200" Height="200" 
+                           Margin="0,0,0,40"
+                           RenderOptions.BitmapScalingMode="HighQuality"/>
+                    
+                    <!-- Title -->
+                    <TextBlock Text="TableFlo" 
+                               FontSize="48" 
+                               FontWeight="Bold"
+                               Foreground="#D4A574"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,15"/>
+                    
+                    <TextBlock Text="The Casino Workforce Automation Engine" 
+                               FontSize="16" 
+                               Foreground="#E6EDF3"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               LineHeight="24"
+                               Margin="0,0,0,40"
+                               MaxWidth="350"/>
+                    
+                    <!-- Feature Cards -->
+                    <StackPanel Margin="0,20,0,0">
+                        <!-- Feature 1 -->
+                        <Border Background="#171E26" 
+                                CornerRadius="10" 
+                                Padding="20,15" 
+                                Margin="0,0,0,15"
+                                BorderBrush="#273242"
+                                BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock Text="🤖 AI-Powered Scheduling" 
+                                           FontSize="14" 
+                                           FontWeight="SemiBold"
+                                           Foreground="#D4A574"
+                                           Margin="0,0,0,5"/>
+                                <TextBlock Text="Intelligent dealer rotations based on skills, fairness, and compliance" 
+                                           FontSize="12" 
+                                           Foreground="#9FB0C0"
+                                           TextWrapping="Wrap"
+                                           LineHeight="18"/>
+                            </StackPanel>
+                        </Border>
+                        
+                        <!-- Feature 2 -->
+                        <Border Background="#171E26" 
+                                CornerRadius="10" 
+                                Padding="20,15" 
+                                Margin="0,0,0,15"
+                                BorderBrush="#273242"
+                                BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock Text="📊 Real-Time Dashboard" 
+                                           FontSize="14" 
+                                           FontWeight="SemiBold"
+                                           Foreground="#D4A574"
+                                           Margin="0,0,0,5"/>
+                                <TextBlock Text="Live visibility into dealer activity, table coverage, and rotations" 
+                                           FontSize="12" 
+                                           Foreground="#9FB0C0"
+                                           TextWrapping="Wrap"
+                                           LineHeight="18"/>
+                            </StackPanel>
+                        </Border>
+                        
+                        <!-- Feature 3 -->
+                        <Border Background="#171E26" 
+                                CornerRadius="10" 
+                                Padding="20,15"
+                                BorderBrush="#273242"
+                                BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock Text="✅ Compliance Built-In" 
+                                           FontSize="14" 
+                                           FontWeight="SemiBold"
+                                           Foreground="#D4A574"
+                                           Margin="0,0,0,5"/>
+                                <TextBlock Text="Automatic break tracking and labor law compliance alerts" 
+                                           FontSize="12" 
+                                           Foreground="#9FB0C0"
+                                           TextWrapping="Wrap"
+                                           LineHeight="18"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+            
+            <!-- Close Button (Overlay) -->
             <Button Content="×" 
+                    Grid.Column="1"
                     Width="40" Height="40"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
-                    Margin="10"
+                    Margin="15"
                     FontSize="24"
                     Background="Transparent"
-                    Foreground="{StaticResource TextMutedBrush}"
+                    Foreground="#9FB0C0"
                     BorderThickness="0"
                     Cursor="Hand"
                     Click="CloseButton_Click">
@@ -100,93 +292,12 @@
                         </Setter>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+                                <Setter Property="Foreground" Value="#E6EDF3"/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
             </Button>
-            
-            <StackPanel VerticalAlignment="Center" Margin="50,0">
-                <TextBlock Text="Welcome Back" 
-                           FontSize="32" 
-                           FontWeight="Bold"
-                           Foreground="{StaticResource TextPrimaryBrush}"
-                           Margin="0,0,0,10"/>
-                
-                <TextBlock Text="Sign in to continue" 
-                           FontSize="14" 
-                           Foreground="{StaticResource TextMutedBrush}"
-                           Margin="0,0,0,40"/>
-                
-                <!-- Employee Number -->
-                <TextBlock Text="Employee Number" 
-                           FontSize="13" 
-                           Foreground="{StaticResource TextMutedBrush}"
-                           Margin="0,0,0,8"/>
-                
-                <TextBox Text="{Binding EmployeeNumber, UpdateSourceTrigger=PropertyChanged}" 
-                         Style="{StaticResource ModernTextBox}"
-                         Height="45"
-                         Margin="0,0,0,20"/>
-                
-                <!-- Password (Simplified for demo) -->
-                <TextBlock Text="Password" 
-                           FontSize="13" 
-                           Foreground="{StaticResource TextMutedBrush}"
-                           Margin="0,0,0,8"/>
-                
-                <PasswordBox x:Name="PasswordBox"
-                             Style="{StaticResource ModernPasswordBox}"
-                             Height="45"
-                             Margin="0,0,0,30"/>
-                
-                <!-- Error Message -->
-                <TextBlock Text="{Binding ErrorMessage}" 
-                           Foreground="{StaticResource ErrorBrush}"
-                           FontSize="13"
-                           Margin="0,0,0,20"
-                           TextWrapping="Wrap"
-                           Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}"/>
-                
-                <!-- Login Button -->
-                <Button Content="Sign In" 
-                        Click="SignIn_Click"
-                        Style="{StaticResource PrimaryButton}"
-                        Height="50"
-                        FontSize="16"
-                        Margin="0,0,0,20"/>
-                
-                <!-- Loading Indicator -->
-                <TextBlock Text="Signing in..." 
-                           FontSize="13" 
-                           Foreground="{StaticResource TextMutedBrush}"
-                           HorizontalAlignment="Center"
-                           Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                
-                <!-- Demo Info -->
-                <Border Background="{StaticResource BackgroundPanelBrush}"
-                        BorderBrush="{StaticResource LineBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="15"
-                        Margin="0,30,0,0">
-                    <StackPanel>
-                        <TextBlock Text="Demo Credentials" 
-                                   FontSize="12" 
-                                   FontWeight="SemiBold"
-                                   Foreground="{StaticResource AccentGoldBrush}"
-                                   Margin="0,0,0,8"/>
-                        <TextBlock Text="Employee #: ADMIN001" 
-                                   FontSize="11" 
-                                   Foreground="{StaticResource TextMutedBrush}"/>
-                        <TextBlock Text="Password: admin123" 
-                                   FontSize="11" 
-                                   Foreground="{StaticResource TextMutedBrush}"/>
-                    </StackPanel>
-                </Border>
-            </StackPanel>
         </Grid>
-    </Grid>
+    </Border>
 </Window>
-
