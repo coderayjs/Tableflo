@@ -621,7 +621,7 @@
                                                 <TextBlock Text="{Binding TotalDealers}" 
                                                            FontSize="48" 
                                                            FontWeight="Bold"
-                                                           Foreground="{StaticResource GoldAccentBrush}"/>
+                                                           Foreground="{StaticResource AccentGoldBrush}"/>
                                             </StackPanel>
                                         </Border>
                                         
@@ -675,7 +675,7 @@
                                                 <TextBlock Text="{Binding TotalTables}" 
                                                            FontSize="48" 
                                                            FontWeight="Bold"
-                                                           Foreground="{StaticResource GoldAccentBrush}"/>
+                                                           Foreground="{StaticResource AccentGoldBrush}"/>
                                             </StackPanel>
                                         </Border>
                                         
