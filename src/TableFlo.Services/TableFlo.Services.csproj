@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TableFlo.Core\TableFlo.Core.csproj" />
+    <ProjectReference Include="..\TableFlo.Data\TableFlo.Data.csproj" />
+  </ItemGroup>
+
+</Project>
+

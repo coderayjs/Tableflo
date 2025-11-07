@@ -1,0 +1,264 @@
+<Window x:Class="TableFlo.UI.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="TableFlo - Dealer Rotation Management" 
+        Height="900" Width="1600"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BackgroundDarkBrush}"
+        WindowState="Maximized">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Header -->
+        <Border Grid.Row="0" 
+                Background="{StaticResource BackgroundDarkBrush}"
+                BorderBrush="{StaticResource LineBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="20,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <!-- Logo and Title -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <Ellipse Width="40" Height="40" 
+                             Fill="{StaticResource AccentGoldBrush}"
+                             Margin="0,0,15,0"/>
+                    <TextBlock Text="TableFlo" 
+                               FontSize="20" 
+                               FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+                
+                <!-- Navigation (Placeholder) -->
+                <StackPanel Grid.Column="1" 
+                            Orientation="Horizontal" 
+                            HorizontalAlignment="Center">
+                    <Button Content="Dashboard" 
+                            Style="{StaticResource SecondaryButton}"
+                            Margin="5,0"/>
+                    <Button Content="Dealers" 
+                            Style="{StaticResource SecondaryButton}"
+                            Margin="5,0"/>
+                    <Button Content="Tables" 
+                            Style="{StaticResource SecondaryButton}"
+                            Margin="5,0"/>
+                    <Button Content="Analytics" 
+                            Style="{StaticResource SecondaryButton}"
+                            Margin="5,0"/>
+                </StackPanel>
+                
+                <!-- User Info -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <TextBlock Text="{Binding CurrentUserName}" 
+                               FontSize="14" 
+                               Foreground="{StaticResource TextMutedBrush}"
+                               VerticalAlignment="Center"
+                               Margin="0,0,15,0"/>
+                    <Button Content="Logout" 
+                            Style="{StaticResource SecondaryButton}"
+                            Click="Logout_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+        
+        <!-- Content Area -->
+        <Grid Grid.Row="1">
+            <!-- Dashboard View (3-Section Layout) -->
+            <Grid x:Name="DashboardView" Margin="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.2*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="0.7*"/>
+                </Grid.ColumnDefinitions>
+                
+                <!-- Section 1: Current Dealers -->
+                <Border Grid.Column="0" 
+                        Background="{StaticResource BackgroundPanelBrush}"
+                        BorderBrush="{StaticResource LineBrush}"
+                        BorderThickness="1"
+                        CornerRadius="12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        
+                        <Border Grid.Row="0" 
+                                BorderBrush="{StaticResource LineBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="14,12">
+                            <TextBlock Text="Section 1 — Tables (Current Dealer)" 
+                                       FontSize="14" 
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                        </Border>
+                        
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                            <DataGrid x:Name="CurrentDealersGrid"
+                                      Style="{StaticResource ModernDataGrid}"
+                                      ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}"
+                                      CellStyle="{StaticResource DataGridCellStyle}"
+                                      Margin="10">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Table" Binding="{Binding TableNumber}" Width="90"/>
+                                    <DataGridTextColumn Header="Game" Binding="{Binding GameType}" Width="100"/>
+                                    <DataGridTextColumn Header="Current Dealer" Binding="{Binding CurrentDealerName}" Width="*"/>
+                                    <DataGridTextColumn Header="Time" Binding="{Binding TimeInMinutes}" Width="80"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </ScrollViewer>
+                        
+                        <Border Grid.Row="2" 
+                                BorderBrush="{StaticResource LineBrush}"
+                                BorderThickness="0,1,0,0"
+                                Padding="10">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button Content="Generate AI Schedule" 
+                                        Style="{StaticResource PrimaryButton}"
+                                        Margin="5"/>
+                                <Button Content="Export" 
+                                        Style="{StaticResource SecondaryButton}"
+                                        Margin="5"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+                
+                <!-- Section 2: Next Dealers -->
+                <Border Grid.Column="2" 
+                        Background="{StaticResource BackgroundPanelBrush}"
+                        BorderBrush="{StaticResource LineBrush}"
+                        BorderThickness="1"
+                        CornerRadius="12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        
+                        <Border Grid.Row="0" 
+                                BorderBrush="{StaticResource LineBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="14,12">
+                            <TextBlock Text="Section 2 — Breaking Dealer (Next Push)" 
+                                       FontSize="14" 
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                        </Border>
+                        
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                            <DataGrid x:Name="NextDealersGrid"
+                                      Style="{StaticResource ModernDataGrid}"
+                                      ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}"
+                                      CellStyle="{StaticResource DataGridCellStyle}"
+                                      Margin="10">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Table" Binding="{Binding TableNumber}" Width="90"/>
+                                    <DataGridTextColumn Header="Next Dealer" Binding="{Binding NextDealerName}" Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </ScrollViewer>
+                        
+                        <Border Grid.Row="2" 
+                                BorderBrush="{StaticResource LineBrush}"
+                                BorderThickness="0,1,0,0"
+                                Padding="10">
+                            <Button Content="Push All Tables" 
+                                    Style="{StaticResource PrimaryButton}"
+                                    HorizontalAlignment="Right"
+                                    Margin="5"/>
+                        </Border>
+                    </Grid>
+                </Border>
+                
+                <!-- Section 3: On Break -->
+                <Border Grid.Column="4" 
+                        Background="{StaticResource BackgroundPanelBrush}"
+                        BorderBrush="{StaticResource LineBrush}"
+                        BorderThickness="1"
+                        CornerRadius="12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        
+                        <Border Grid.Row="0" 
+                                BorderBrush="{StaticResource LineBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="14,12">
+                            <TextBlock Text="Section 3 — On Break" 
+                                       FontSize="14" 
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                        </Border>
+                        
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                            <ItemsControl x:Name="BreakListControl" Margin="10">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#1B2633" 
+                                                BorderBrush="{StaticResource LineBrush}"
+                                                BorderThickness="1"
+                                                CornerRadius="999"
+                                                Padding="10,6"
+                                                Margin="0,0,0,8">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" 
+                                                           Text="{Binding DealerName}" 
+                                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                                           FontSize="12"
+                                                           VerticalAlignment="Center"/>
+                                                <Button Grid.Column="1" 
+                                                        Content="×" 
+                                                        Style="{StaticResource SecondaryButton}"
+                                                        Padding="6,2"
+                                                        FontSize="11"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                        
+                        <Border Grid.Row="2" 
+                                BorderBrush="{StaticResource LineBrush}"
+                                BorderThickness="0,1,0,0"
+                                Padding="10">
+                            <StackPanel>
+                                <TextBox x:Name="NewBreakDealerTextBox"
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,0,8"/>
+                                <Button Content="Add to Break" 
+                                        Style="{StaticResource SecondaryButton}"
+                                        HorizontalAlignment="Stretch"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
+
