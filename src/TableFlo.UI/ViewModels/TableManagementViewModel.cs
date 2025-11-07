@@ -87,7 +87,7 @@ public class TableManagementViewModel : ViewModelBase
                 Status = table.Status.ToString(),
                 MinBet = table.MinBet,
                 MaxBet = table.MaxBet,
-                PitLocation = table.PitLocation
+                PitLocation = table.Pit
             });
         }
 

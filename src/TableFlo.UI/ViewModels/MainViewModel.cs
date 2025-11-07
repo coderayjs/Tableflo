@@ -212,7 +212,17 @@ public class MainViewModel : ViewModelBase
             IsLoading = true;
             StatusMessage = "Executing push...";
 
-            await _rotationService.ExecutePushAsync();
+            var employeeId = SessionManager.CurrentEmployee?.Id ?? 0;
+            
+            // Execute push for each open table
+            var openTables = await _context.Tables
+                .Where(t => t.Status == TableStatus.Open)
+                .ToListAsync();
+                
+            foreach (var table in openTables)
+            {
+                await _rotationService.ExecutePushAsync(table.Id, employeeId);
+            }
 
             await _auditService.LogActionAsync(
                 SessionManager.CurrentEmployee?.Id ?? 0,
@@ -255,7 +265,13 @@ public class MainViewModel : ViewModelBase
                 return;
             }
 
-            var schedule = await _schedulingService.GenerateScheduleAsync(DateTime.UtcNow);
+            var scheduleResult = await _schedulingService.GenerateScheduleAsync(DateTime.UtcNow);
+
+            if (!scheduleResult.Success)
+            {
+                MessageBox.Show($"Failed to generate schedule: {scheduleResult.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
             // Clear existing next assignments
             var existingNextAssignments = await _context.Assignments
@@ -268,7 +284,7 @@ public class MainViewModel : ViewModelBase
             }
 
             // Create new next assignments
-            foreach (var assignment in schedule)
+            foreach (var assignment in scheduleResult.Assignments)
             {
                 assignment.IsCurrent = false;
                 await _context.Assignments.AddAsync(assignment);
@@ -279,12 +295,12 @@ public class MainViewModel : ViewModelBase
             await _auditService.LogActionAsync(
                 SessionManager.CurrentEmployee?.Id ?? 0,
                 ActionType.ScheduleGenerated,
-                $"AI schedule generated for {schedule.Count} tables"
+                $"AI schedule generated for {scheduleResult.Assignments.Count} tables"
             );
 
             await LoadDashboardDataAsync();
 
-            MessageBox.Show($"AI schedule generated for {schedule.Count} tables!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show($"AI schedule generated for {scheduleResult.Assignments.Count} tables!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception ex)
         {
@@ -314,16 +330,26 @@ public class MainViewModel : ViewModelBase
 
             // Find dealer by employee number
             var employee = await _context.Employees
-                .Include(e => e.Dealer)
                 .FirstOrDefaultAsync(e => e.EmployeeNumber == NewBreakDealerNumber);
 
-            if (employee?.Dealer == null)
+            if (employee == null)
             {
-                MessageBox.Show("Dealer not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Employee not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            await _rotationService.SendToBreakAsync(employee.Dealer.Id);
+            // Get dealer record
+            var dealer = await _context.Dealers
+                .FirstOrDefaultAsync(d => d.EmployeeId == employee.Id);
+
+            if (dealer == null)
+            {
+                MessageBox.Show("This employee is not a dealer.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var employeeId = SessionManager.CurrentEmployee?.Id ?? 0;
+            await _rotationService.SendToBreakAsync(dealer.Id, "Regular", 20, employeeId);
 
             await _auditService.LogActionAsync(
                 SessionManager.CurrentEmployee?.Id ?? 0,
@@ -362,7 +388,8 @@ public class MainViewModel : ViewModelBase
             if (dealer == null)
                 return;
 
-            await _rotationService.ReturnFromBreakAsync(dealerId);
+            var employeeId = SessionManager.CurrentEmployee?.Id ?? 0;
+            await _rotationService.ReturnFromBreakAsync(dealerId, employeeId);
 
             await _auditService.LogActionAsync(
                 SessionManager.CurrentEmployee?.Id ?? 0,
