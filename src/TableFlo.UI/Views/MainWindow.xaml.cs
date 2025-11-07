@@ -1,6 +1,7 @@
 using System.Windows;
 using TableFlo.Services.Interfaces;
 using TableFlo.Core.Enums;
+using TableFlo.UI.ViewModels;
 
 namespace TableFlo.UI.Views;
 
@@ -9,21 +10,34 @@ namespace TableFlo.UI.Views;
 /// </summary>
 public partial class MainWindow : Window
 {
+    private readonly MainViewModel _mainViewModel;
+    private readonly DealerManagementViewModel _dealerViewModel;
+    private readonly TableManagementViewModel _tableViewModel;
+    private readonly AnalyticsViewModel _analyticsViewModel;
+
     public MainWindow()
     {
         InitializeComponent();
         
+        // Get ViewModels from DI
+        _mainViewModel = App.GetService<MainViewModel>();
+        _dealerViewModel = App.GetService<DealerManagementViewModel>();
+        _tableViewModel = App.GetService<TableManagementViewModel>();
+        _analyticsViewModel = App.GetService<AnalyticsViewModel>();
+        
+        // Set main DataContext (for Dashboard view)
+        DataContext = _mainViewModel;
+        
         // Set current user name in header
         if (SessionManager.CurrentEmployee != null)
         {
-            DataContext = new
-            {
-                CurrentUserName = $"Logged in as: {SessionManager.CurrentEmployee.FullName} (#{SessionManager.CurrentEmployee.EmployeeNumber})"
-            };
+            UserInfoText.Text = $"Logged in as: {SessionManager.CurrentEmployee.FullName} (#{SessionManager.CurrentEmployee.EmployeeNumber})";
         }
         
-        // Set DataContext for Dealers view
-        DealersView.DataContext = App.GetService<ViewModels.DealerManagementViewModel>();
+        // Set DataContext for each view
+        DealersView.DataContext = _dealerViewModel;
+        TablesView.DataContext = _tableViewModel;
+        AnalyticsView.DataContext = _analyticsViewModel;
     }
 
     private void ShowDashboard_Click(object sender, RoutedEventArgs e)

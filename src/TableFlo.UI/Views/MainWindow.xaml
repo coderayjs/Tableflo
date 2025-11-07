@@ -69,7 +69,7 @@
                 </StackPanel>                
                 <!-- User Info -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <TextBlock Text="{Binding CurrentUserName}" 
+                    <TextBlock x:Name="UserInfoText"
                                FontSize="14" 
                                Foreground="{StaticResource TextMutedBrush}"
                                VerticalAlignment="Center"
@@ -118,10 +118,13 @@
                         
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                             <DataGrid x:Name="CurrentDealersGrid"
+                                      ItemsSource="{Binding CurrentTables}"
                                       Style="{StaticResource ModernDataGrid}"
                                       ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}"
                                       CellStyle="{StaticResource DataGridCellStyle}"
-                                      Margin="10">
+                                      Margin="10"
+                                      AutoGenerateColumns="False"
+                                      IsReadOnly="True">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Table" Binding="{Binding TableNumber}" Width="90"/>
                                     <DataGridTextColumn Header="Game" Binding="{Binding GameType}" Width="100"/>
@@ -137,9 +140,11 @@
                                 Padding="10">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                 <Button Content="Generate AI Schedule" 
+                                        Command="{Binding GenerateScheduleCommand}"
                                         Style="{StaticResource PrimaryButton}"
                                         Margin="5"/>
-                                <Button Content="Export" 
+                                <Button Content="Refresh" 
+                                        Command="{Binding RefreshCommand}"
                                         Style="{StaticResource SecondaryButton}"
                                         Margin="5"/>
                             </StackPanel>
@@ -172,10 +177,13 @@
                         
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                             <DataGrid x:Name="NextDealersGrid"
+                                      ItemsSource="{Binding NextTables}"
                                       Style="{StaticResource ModernDataGrid}"
                                       ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}"
                                       CellStyle="{StaticResource DataGridCellStyle}"
-                                      Margin="10">
+                                      Margin="10"
+                                      AutoGenerateColumns="False"
+                                      IsReadOnly="True">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Table" Binding="{Binding TableNumber}" Width="90"/>
                                     <DataGridTextColumn Header="Next Dealer" Binding="{Binding NextDealerName}" Width="*"/>
@@ -188,6 +196,7 @@
                                 BorderThickness="0,1,0,0"
                                 Padding="10">
                             <Button Content="Push All Tables" 
+                                    Command="{Binding PushAllTablesCommand}"
                                     Style="{StaticResource PrimaryButton}"
                                     HorizontalAlignment="Right"
                                     Margin="5"/>
@@ -219,7 +228,9 @@
                         </Border>
                         
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                            <ItemsControl x:Name="BreakListControl" Margin="10">
+                            <ItemsControl x:Name="BreakListControl" 
+                                          ItemsSource="{Binding DealersOnBreak}"
+                                          Margin="10">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Border Background="#1B2633" 
@@ -239,7 +250,9 @@
                                                            FontSize="12"
                                                            VerticalAlignment="Center"/>
                                                 <Button Grid.Column="1" 
-                                                        Content="×" 
+                                                        Content="×"
+                                                        Command="{Binding DataContext.ReturnFromBreakCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                        CommandParameter="{Binding DealerId}"
                                                         Style="{StaticResource SecondaryButton}"
                                                         Padding="6,2"
                                                         FontSize="11"/>
@@ -256,9 +269,11 @@
                                 Padding="10">
                             <StackPanel>
                                 <TextBox x:Name="NewBreakDealerTextBox"
+                                         Text="{Binding NewBreakDealerNumber, UpdateSourceTrigger=PropertyChanged}"
                                          Style="{StaticResource ModernTextBox}"
                                          Margin="0,0,0,8"/>
-                                <Button Content="Add to Break" 
+                                <Button Content="Send to Break" 
+                                        Command="{Binding SendToBreakCommand}"
                                         Style="{StaticResource SecondaryButton}"
                                         HorizontalAlignment="Stretch"/>
                             </StackPanel>
@@ -475,67 +490,212 @@
                 </Border>
             </Grid>
             
-            <!-- Tables View (Placeholder) -->
+            <!-- Tables View -->
             <Grid x:Name="TablesView" Margin="20" Visibility="Collapsed">
                 <Border Background="{StaticResource BackgroundPanelBrush}"
                         BorderBrush="{StaticResource LineBrush}"
                         BorderThickness="1"
-                        CornerRadius="12"
-                        Padding="40">
-                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <TextBlock Text="🎰" 
-                                   FontSize="72"
-                                   HorizontalAlignment="Center"
-                                   Margin="0,0,0,20"/>
-                        <TextBlock Text="Table Management" 
-                                   FontSize="28" 
-                                   FontWeight="Bold"
-                                   Foreground="{StaticResource TextPrimaryBrush}"
-                                   HorizontalAlignment="Center"
-                                   Margin="0,0,0,10"/>
-                        <TextBlock Text="Configure game tables, limits, and crew requirements" 
-                                   FontSize="14" 
-                                   Foreground="{StaticResource TextMutedBrush}"
-                                   HorizontalAlignment="Center"
-                                   Margin="0,0,0,20"/>
-                        <TextBlock Text="Coming Soon" 
-                                   FontSize="16" 
-                                   FontWeight="SemiBold"
-                                   Foreground="#D4A574"
-                                   HorizontalAlignment="Center"/>
-                    </StackPanel>
+                        CornerRadius="12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        
+                        <!-- Header -->
+                        <Border Grid.Row="0"
+                                BorderBrush="{StaticResource LineBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="20,15">
+                            <Grid>
+                                <TextBlock Text="Table Management" 
+                                           FontSize="18" 
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"/>
+                                <Button Content="Refresh"
+                                        Command="{Binding RefreshCommand}"
+                                        Style="{StaticResource SecondaryButton}"
+                                        HorizontalAlignment="Right"/>
+                            </Grid>
+                        </Border>
+                        
+                        <!-- Tables Grid -->
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                            <DataGrid ItemsSource="{Binding Tables}"
+                                      SelectedItem="{Binding SelectedTable}"
+                                      Style="{StaticResource ModernDataGrid}"
+                                      ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}"
+                                      CellStyle="{StaticResource DataGridCellStyle}"
+                                      Margin="20"
+                                      AutoGenerateColumns="False"
+                                      IsReadOnly="True">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Table #" Binding="{Binding TableNumber}" Width="100"/>
+                                    <DataGridTextColumn Header="Game" Binding="{Binding GameType}" Width="150"/>
+                                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120"/>
+                                    <DataGridTextColumn Header="Min Bet" Binding="{Binding MinBet, StringFormat=C}" Width="100"/>
+                                    <DataGridTextColumn Header="Max Bet" Binding="{Binding MaxBet, StringFormat=C}" Width="100"/>
+                                    <DataGridTextColumn Header="Pit" Binding="{Binding PitLocation}" Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </ScrollViewer>
+                        
+                        <!-- Action Buttons -->
+                        <Border Grid.Row="2"
+                                BorderBrush="{StaticResource LineBrush}"
+                                BorderThickness="0,1,0,0"
+                                Padding="20,15">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button Content="Open Table"
+                                        Command="{Binding OpenTableCommand}"
+                                        Style="{StaticResource PrimaryButton}"
+                                        Margin="5"/>
+                                <Button Content="Close Table"
+                                        Command="{Binding CloseTableCommand}"
+                                        Style="{StaticResource DangerButton}"
+                                        Margin="5"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
                 </Border>
             </Grid>
             
-            <!-- Analytics View (Placeholder) -->
+            <!-- Analytics View -->
             <Grid x:Name="AnalyticsView" Margin="20" Visibility="Collapsed">
                 <Border Background="{StaticResource BackgroundPanelBrush}"
                         BorderBrush="{StaticResource LineBrush}"
                         BorderThickness="1"
-                        CornerRadius="12"
-                        Padding="40">
-                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <TextBlock Text="📊" 
-                                   FontSize="72"
-                                   HorizontalAlignment="Center"
-                                   Margin="0,0,0,20"/>
-                        <TextBlock Text="Analytics Dashboard" 
-                                   FontSize="28" 
-                                   FontWeight="Bold"
-                                   Foreground="{StaticResource TextPrimaryBrush}"
-                                   HorizontalAlignment="Center"
-                                   Margin="0,0,0,10"/>
-                        <TextBlock Text="View performance metrics, rotation fairness, and trends" 
-                                   FontSize="14" 
-                                   Foreground="{StaticResource TextMutedBrush}"
-                                   HorizontalAlignment="Center"
-                                   Margin="0,0,0,20"/>
-                        <TextBlock Text="Coming Soon" 
-                                   FontSize="16" 
-                                   FontWeight="SemiBold"
-                                   Foreground="#D4A574"
-                                   HorizontalAlignment="Center"/>
-                    </StackPanel>
+                        CornerRadius="12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        
+                        <!-- Header -->
+                        <Border Grid.Row="0"
+                                BorderBrush="{StaticResource LineBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="20,15">
+                            <Grid>
+                                <TextBlock Text="Analytics Dashboard" 
+                                           FontSize="18" 
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"/>
+                                <Button Content="Refresh"
+                                        Command="{Binding RefreshCommand}"
+                                        Style="{StaticResource SecondaryButton}"
+                                        HorizontalAlignment="Right"/>
+                            </Grid>
+                        </Border>
+                        
+                        <!-- Stats Grid -->
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                            <Grid Margin="40">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                
+                                <!-- Dealer Stats -->
+                                <StackPanel Grid.Row="0" Margin="0,0,0,40">
+                                    <TextBlock Text="Dealer Statistics" 
+                                               FontSize="22" 
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource TextPrimaryBrush}"
+                                               Margin="0,0,0,20"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <Border Grid.Column="0" Background="#171E26" CornerRadius="10" Padding="30" Margin="0,0,10,0">
+                                            <StackPanel>
+                                                <TextBlock Text="Total Dealers" 
+                                                           FontSize="14" 
+                                                           Foreground="{StaticResource TextMutedBrush}"
+                                                           Margin="0,0,0,10"/>
+                                                <TextBlock Text="{Binding TotalDealers}" 
+                                                           FontSize="48" 
+                                                           FontWeight="Bold"
+                                                           Foreground="{StaticResource GoldAccentBrush}"/>
+                                            </StackPanel>
+                                        </Border>
+                                        
+                                        <Border Grid.Column="1" Background="#171E26" CornerRadius="10" Padding="30" Margin="5,0">
+                                            <StackPanel>
+                                                <TextBlock Text="Currently Dealing" 
+                                                           FontSize="14" 
+                                                           Foreground="{StaticResource TextMutedBrush}"
+                                                           Margin="0,0,0,10"/>
+                                                <TextBlock Text="{Binding ActiveDealers}" 
+                                                           FontSize="48" 
+                                                           FontWeight="Bold"
+                                                           Foreground="#10B981"/>
+                                            </StackPanel>
+                                        </Border>
+                                        
+                                        <Border Grid.Column="2" Background="#171E26" CornerRadius="10" Padding="30" Margin="10,0,0,0">
+                                            <StackPanel>
+                                                <TextBlock Text="On Break" 
+                                                           FontSize="14" 
+                                                           Foreground="{StaticResource TextMutedBrush}"
+                                                           Margin="0,0,0,10"/>
+                                                <TextBlock Text="{Binding DealersOnBreak}" 
+                                                           FontSize="48" 
+                                                           FontWeight="Bold"
+                                                           Foreground="#F59E0B"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+                                
+                                <!-- Table Stats -->
+                                <StackPanel Grid.Row="1">
+                                    <TextBlock Text="Table Statistics" 
+                                               FontSize="22" 
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource TextPrimaryBrush}"
+                                               Margin="0,0,0,20"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <Border Grid.Column="0" Background="#171E26" CornerRadius="10" Padding="30" Margin="0,0,10,0">
+                                            <StackPanel>
+                                                <TextBlock Text="Total Tables" 
+                                                           FontSize="14" 
+                                                           Foreground="{StaticResource TextMutedBrush}"
+                                                           Margin="0,0,0,10"/>
+                                                <TextBlock Text="{Binding TotalTables}" 
+                                                           FontSize="48" 
+                                                           FontWeight="Bold"
+                                                           Foreground="{StaticResource GoldAccentBrush}"/>
+                                            </StackPanel>
+                                        </Border>
+                                        
+                                        <Border Grid.Column="1" Background="#171E26" CornerRadius="10" Padding="30" Margin="10,0,0,0">
+                                            <StackPanel>
+                                                <TextBlock Text="Currently Open" 
+                                                           FontSize="14" 
+                                                           Foreground="{StaticResource TextMutedBrush}"
+                                                           Margin="0,0,0,10"/>
+                                                <TextBlock Text="{Binding OpenTables}" 
+                                                           FontSize="48" 
+                                                           FontWeight="Bold"
+                                                           Foreground="#10B981"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+                            </Grid>
+                        </ScrollViewer>
+                    </Grid>
                 </Border>
             </Grid>
         </Grid>
