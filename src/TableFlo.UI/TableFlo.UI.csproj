@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\tabflowlogo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\TableFlo.Core\TableFlo.Core.csproj" />
     <ProjectReference Include="..\TableFlo.Data\TableFlo.Data.csproj" />
     <ProjectReference Include="..\TableFlo.Services\TableFlo.Services.csproj" />

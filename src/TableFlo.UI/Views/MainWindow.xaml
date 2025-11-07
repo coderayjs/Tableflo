@@ -31,9 +31,10 @@
                 
                 <!-- Logo and Title -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <Ellipse Width="40" Height="40" 
-                             Fill="{StaticResource AccentGoldBrush}"
-                             Margin="0,0,15,0"/>
+                    <Image Source="/Assets/tabflowlogo.png" 
+                           Width="40" Height="40" 
+                           Margin="0,0,15,0"
+                           RenderOptions.BitmapScalingMode="HighQuality"/>
                     <TextBlock Text="TableFlo" 
                                FontSize="20" 
                                FontWeight="Bold"

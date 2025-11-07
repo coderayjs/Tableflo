@@ -22,10 +22,11 @@
         <!-- Left Side - Branding -->
         <Grid Grid.Column="0" Background="{StaticResource BackgroundPanelBrush}">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <!-- Logo Placeholder -->
-                <Ellipse Width="120" Height="120" 
-                         Fill="{StaticResource AccentGoldBrush}"
-                         Margin="0,0,0,30"/>
+                <!-- TableFlo Logo -->
+                <Image Source="/Assets/tabflowlogo.png" 
+                       Width="180" Height="180" 
+                       Margin="0,0,0,30"
+                       RenderOptions.BitmapScalingMode="HighQuality"/>
                 
                 <TextBlock Text="TableFlo" 
                            FontSize="48" 
