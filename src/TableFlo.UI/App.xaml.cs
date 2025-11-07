@@ -23,9 +23,27 @@ public partial class App : Application
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices((context, services) =>
             {
-                // Database
+                // Database - store in ProgramData for shared access across all users
+                // This is the professional approach for enterprise casino operations
+                var programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+                var tableFloFolder = Path.Combine(programDataPath, "TableFlo");
+                
+                try
+                {
+                    Directory.CreateDirectory(tableFloFolder); // Ensure folder exists
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // Fallback to user's AppData if ProgramData is not writable
+                    programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                    tableFloFolder = Path.Combine(programDataPath, "TableFlo");
+                    Directory.CreateDirectory(tableFloFolder);
+                }
+                
+                var dbPath = Path.Combine(tableFloFolder, "tableflo.db");
+                
                 services.AddDbContext<TableFloDbContext>(options =>
-                    options.UseSqlite("Data Source=tableflo.db"));
+                    options.UseSqlite($"Data Source={dbPath}"));
 
                 // Data Layer
                 services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -51,14 +69,54 @@ public partial class App : Application
     {
         await _host.StartAsync();
 
-        // Initialize database
-        using (var scope = _host.Services.CreateScope())
+        // Get database path for display (match the logic from App constructor)
+        var programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+        var tableFloFolder = Path.Combine(programDataPath, "TableFlo");
+        
+        // Check if we have access to ProgramData, otherwise use AppData
+        if (!Directory.Exists(tableFloFolder))
         {
-            var context = scope.ServiceProvider.GetRequiredService<TableFloDbContext>();
-            await context.Database.EnsureCreatedAsync();
-            
-            // Seed initial data if needed
-            await SeedDataAsync(context);
+            try
+            {
+                Directory.CreateDirectory(tableFloFolder);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                tableFloFolder = Path.Combine(programDataPath, "TableFlo");
+            }
+        }
+        
+        var dbPath = Path.Combine(tableFloFolder, "tableflo.db");
+
+        // Initialize database BEFORE showing any windows
+        try
+        {
+            using (var scope = _host.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<TableFloDbContext>();
+                
+                // Ensure database exists
+                var isNewDatabase = !File.Exists(dbPath);
+                await context.Database.EnsureCreatedAsync();
+                
+                // Seed initial data if needed
+                await SeedDataAsync(context);
+                
+                // Show success message on first run
+                if (isNewDatabase)
+                {
+                    MessageBox.Show($"✅ Database created successfully!\n\nLocation: {dbPath}\n\nDemo credentials:\nEmployee #: ADMIN001\nPassword: admin123",
+                        "TableFlo - First Run", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Database initialization failed: {ex.Message}\n\nDatabase path: {dbPath}",
+                "Database Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            Shutdown();
+            return;
         }
 
         base.OnStartup(e);
@@ -80,12 +138,31 @@ public partial class App : Application
     {
         // Check if we already have data
         if (await context.Employees.AnyAsync())
+        {
+            // Data already exists, no need to seed
             return;
+        }
 
         // Seed comprehensive demo data
-        var authService = _host.Services.GetRequiredService<IAuthenticationService>();
-        var seeder = new Services.DataSeeder(context, authService);
-        await seeder.SeedAsync();
+        try
+        {
+            var authService = _host.Services.GetRequiredService<IAuthenticationService>();
+            var seeder = new Services.DataSeeder(context, authService);
+            await seeder.SeedAsync();
+            
+            // Verify seeding was successful
+            var employeeCount = await context.Employees.CountAsync();
+            if (employeeCount == 0)
+            {
+                throw new Exception("Data seeding completed but no employees were created.");
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Failed to seed demo data: {ex.Message}\n\nThe app may not function properly.",
+                "Seeding Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            throw;
+        }
     }
 }
 
