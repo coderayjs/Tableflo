@@ -84,7 +84,7 @@ public partial class App : Application
 
         // Seed comprehensive demo data
         var authService = _host.Services.GetRequiredService<IAuthenticationService>();
-        var seeder = new Data.DataSeeder(context, authService);
+        var seeder = new Services.DataSeeder(context, authService);
         await seeder.SeedAsync();
     }
 }

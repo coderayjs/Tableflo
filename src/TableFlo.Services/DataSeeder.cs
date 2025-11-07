@@ -1,8 +1,9 @@
 using TableFlo.Core.Enums;
 using TableFlo.Core.Models;
+using TableFlo.Data;
 using TableFlo.Services.Interfaces;
 
-namespace TableFlo.Data;
+namespace TableFlo.Services;
 
 /// <summary>
 /// Seeds sample data for demo purposes
