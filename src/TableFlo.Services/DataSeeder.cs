@@ -87,7 +87,15 @@ public class DataSeeder
             empNumber++;
         }
 
-        // Create supervisors
+        // Create admin/supervisors
+        var admin = await _authService.RegisterEmployeeAsync(
+            "ADMIN001",
+            "Admin",
+            "User",
+            "admin123",
+            "Administrator"
+        );
+        
         var supervisor = await _authService.RegisterEmployeeAsync(
             "SUP001",
             "John",
