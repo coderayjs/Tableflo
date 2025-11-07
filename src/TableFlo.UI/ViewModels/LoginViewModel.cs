@@ -76,11 +76,22 @@ public class LoginViewModel : ViewModelBase
             SessionManager.CurrentEmployee = employee;
 
             // Open main window
-            var mainWindow = new MainWindow();
-            mainWindow.Show();
+            try
+            {
+                var mainWindow = new MainWindow();
+                mainWindow.Show();
 
-            // Close login window
-            Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive)?.Close();
+                // Close login window
+                var loginWindow = Application.Current.Windows.OfType<LoginWindow>().FirstOrDefault();
+                loginWindow?.Close();
+            }
+            catch (Exception mainWindowEx)
+            {
+                ErrorMessage = $"Failed to open main window: {mainWindowEx.Message}";
+                IsLoading = false;
+                SessionManager.Logout();
+                return;
+            }
         }
         catch (Exception ex)
         {

@@ -21,6 +21,14 @@ public partial class App : Application
 
     public App()
     {
+        // Global exception handler
+        DispatcherUnhandledException += (sender, e) =>
+        {
+            MessageBox.Show($"An unexpected error occurred:\n\n{e.Exception.Message}\n\nStack Trace:\n{e.Exception.StackTrace}",
+                "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            e.Handled = true;
+        };
+
         _host = Host.CreateDefaultBuilder()
             .ConfigureServices((context, services) =>
             {
