@@ -28,12 +28,12 @@ public class DealerManagementViewModel : ViewModelBase
         _authService = authService;
         _auditService = auditService;
 
-        AddDealerCommand = new RelayCommand(AddDealer);
-        EditDealerCommand = new RelayCommand(EditDealer, () => SelectedDealer != null);
-        DeleteDealerCommand = new RelayCommand(DeleteDealer, () => SelectedDealer != null);
-        SaveDealerCommand = new AsyncRelayCommand(SaveDealerAsync);
-        CancelEditCommand = new RelayCommand(CancelEdit);
-        RefreshCommand = new AsyncRelayCommand(LoadDealersAsync);
+        AddDealerCommand = new CommunityToolkit.Mvvm.Input.RelayCommand(AddDealer);
+        EditDealerCommand = new CommunityToolkit.Mvvm.Input.RelayCommand(EditDealer, () => SelectedDealer != null);
+        DeleteDealerCommand = new CommunityToolkit.Mvvm.Input.RelayCommand(DeleteDealer, () => SelectedDealer != null);
+        SaveDealerCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand(SaveDealerAsync);
+        CancelEditCommand = new CommunityToolkit.Mvvm.Input.RelayCommand(CancelEdit);
+        RefreshCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand(LoadDealersAsync);
 
         _ = LoadDealersAsync();
     }
@@ -54,8 +54,8 @@ public class DealerManagementViewModel : ViewModelBase
         set
         {
             SetProperty(ref _selectedDealer, value);
-            (EditDealerCommand as RelayCommand)?.NotifyCanExecuteChanged();
-            (DeleteDealerCommand as RelayCommand)?.NotifyCanExecuteChanged();
+            (EditDealerCommand as CommunityToolkit.Mvvm.Input.RelayCommand)?.NotifyCanExecuteChanged();
+            (DeleteDealerCommand as CommunityToolkit.Mvvm.Input.RelayCommand)?.NotifyCanExecuteChanged();
         }
     }
 

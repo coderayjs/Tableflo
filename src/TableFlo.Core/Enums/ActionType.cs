@@ -9,6 +9,7 @@ public enum ActionType
     Logout,
     DealerAssigned,
     DealerRemoved,
+    DealerUpdated,
     DealerSentToBreak,
     DealerReturnedFromBreak,
     DealerSentHome,
