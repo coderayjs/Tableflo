@@ -13,10 +13,6 @@
         WindowStyle="None"
         AllowsTransparency="True">
     
-    <Window.DataContext>
-        <vm:LoginViewModel/>
-    </Window.DataContext>
-    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
