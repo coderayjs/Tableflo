@@ -154,7 +154,7 @@
                 
                 <!-- Login Button -->
                 <Button Content="Sign In" 
-                        Command="{Binding LoginCommand}"
+                        Click="SignIn_Click"
                         Style="{StaticResource PrimaryButton}"
                         Height="50"
                         FontSize="16"

@@ -10,7 +10,7 @@ namespace TableFlo.UI.ViewModels;
 /// <summary>
 /// ViewModel for Login screen
 /// </summary>
-public partial class LoginViewModel : ViewModelBase
+public class LoginViewModel : ViewModelBase
 {
     private readonly IAuthenticationService _authService;
     private readonly IAuditService _auditService;
@@ -19,18 +19,13 @@ public partial class LoginViewModel : ViewModelBase
     {
         _authService = authService;
         _auditService = auditService;
-        LoginCommand = new AsyncRelayCommand(LoginAsync, () => !string.IsNullOrWhiteSpace(EmployeeNumber));
     }
 
     private string _employeeNumber = string.Empty;
     public string EmployeeNumber
     {
         get => _employeeNumber;
-        set
-        {
-            SetProperty(ref _employeeNumber, value);
-            LoginCommand.NotifyCanExecuteChanged();
-        }
+        set => SetProperty(ref _employeeNumber, value);
     }
 
     private string _errorMessage = string.Empty;
@@ -47,9 +42,7 @@ public partial class LoginViewModel : ViewModelBase
         set => SetProperty(ref _isLoading, value);
     }
 
-    public IAsyncRelayCommand LoginCommand { get; }
-
-    private async Task LoginAsync()
+    public async Task LoginAsync()
     {
         IsLoading = true;
         ErrorMessage = string.Empty;

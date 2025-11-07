@@ -18,5 +18,14 @@ public partial class LoginWindow : Window
     {
         Application.Current.Shutdown();
     }
+
+    private async void SignIn_Click(object sender, RoutedEventArgs e)
+    {
+        var viewModel = DataContext as LoginViewModel;
+        if (viewModel != null)
+        {
+            await viewModel.LoginAsync();
+        }
+    }
 }
 
