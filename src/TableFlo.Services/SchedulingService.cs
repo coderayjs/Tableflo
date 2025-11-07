@@ -233,8 +233,7 @@ public class SchedulingService : ISchedulingService
         // Calculate total time worked today
         var totalMinutesWorked = dealer.AssignmentHistory
             .Where(a => a.StartTime.Date == DateTime.Today)
-            .Sum(a => (a.EndTime ?? DateTime.UtcNow) - a.StartTime)
-            .TotalMinutes;
+            .Sum(a => ((a.EndTime ?? DateTime.UtcNow) - a.StartTime).TotalMinutes);
 
         // Higher score = needs more assignments for fairness
         var diversityScore = 1.0 / (gamesWorked + 1);
