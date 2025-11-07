@@ -19,6 +19,7 @@
         </Border.Effect>
         
         <Grid>
+        <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="480"/>
                 <ColumnDefinition Width="*"/>
@@ -396,6 +397,7 @@
                                HorizontalAlignment="Center"/>
                 </StackPanel>
             </Border>
+        </Grid>
         </Grid>
     </Border>
 </Window>
