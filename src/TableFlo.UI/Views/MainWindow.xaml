@@ -11,88 +11,166 @@
         WindowState="Maximized">
     
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
         
-        <!-- Header -->
-        <Border Grid.Row="0" 
-                Background="{StaticResource BackgroundDarkBrush}"
+        <!-- Modern Sidebar -->
+        <Border Grid.Column="0"
+                Background="#0A0E14"
                 BorderBrush="{StaticResource LineBrush}"
-                BorderThickness="0,0,0,1"
-                Padding="20,16">
+                BorderThickness="0,0,1,0">
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
                 
-                <!-- Logo and Title -->
-                <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <Image Source="/Assets/tabflowlogo.png" 
-                           Width="40" Height="40" 
-                           Margin="0,0,15,0"
-                           RenderOptions.BitmapScalingMode="HighQuality"/>
-                    <TextBlock Text="TableFlo" 
-                               FontSize="20" 
-                               FontWeight="Bold"
-                               Foreground="{StaticResource TextPrimaryBrush}"
-                               VerticalAlignment="Center"/>
-                </StackPanel>
+                <!-- Logo Section -->
+                <Border Grid.Row="0"
+                        Padding="20,25"
+                        BorderBrush="{StaticResource LineBrush}"
+                        BorderThickness="0,0,0,1">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Assets/tabflowlogo.png" 
+                               Width="36" Height="36" 
+                               Margin="0,0,12,0"
+                               RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="TableFlo" 
+                                       FontSize="20" 
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Casino Management" 
+                                       FontSize="10" 
+                                       Foreground="{StaticResource TextMutedBrush}"
+                                       Margin="0,-2,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
                 
-                <!-- Navigation -->
-                <StackPanel Grid.Column="1" 
-                            Orientation="Horizontal" 
-                            HorizontalAlignment="Center">
-                    <Button x:Name="DashboardButton"
-                            Content="Dashboard" 
-                            Style="{StaticResource SecondaryButton}"
-                            Click="ShowDashboard_Click"
-                            Margin="5,0"/>
-                    <Button x:Name="DealersButton"
-                            Content="Dealers" 
-                            Style="{StaticResource SecondaryButton}"
-                            Click="ShowDealers_Click"
-                            Margin="5,0"/>
-                    <Button x:Name="StringsButton"
-                            Content="Strings" 
-                            Style="{StaticResource SecondaryButton}"
-                            Click="ShowStrings_Click"
-                            Margin="5,0"/>
-                    <Button x:Name="TablesButton"
-                            Content="Tables" 
-                            Style="{StaticResource SecondaryButton}"
-                            Click="ShowTables_Click"
-                            Margin="5,0"/>
-                    <Button x:Name="AnalyticsButton"
-                            Content="Analytics" 
-                            Style="{StaticResource SecondaryButton}"
-                            Click="ShowAnalytics_Click"
-                            Margin="5,0"/>
-                    <Button x:Name="SettingsButton"
-                            Content="Settings" 
-                            Style="{StaticResource SecondaryButton}"
-                            Click="ShowSettings_Click"
-                            Margin="5,0"/>
-                </StackPanel>                
-                <!-- User Info -->
-                <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <TextBlock x:Name="UserInfoText"
-                               FontSize="14" 
-                               Foreground="{StaticResource TextMutedBrush}"
-                               VerticalAlignment="Center"
-                               Margin="0,0,15,0"/>
-                    <Button Content="Logout" 
-                            Style="{StaticResource SecondaryButton}"
-                            Click="Logout_Click"/>
-                </StackPanel>
+                <!-- Navigation Menu -->
+                <ScrollViewer Grid.Row="1" 
+                              VerticalScrollBarVisibility="Auto"
+                              Padding="12,20">
+                    <StackPanel>
+                        <!-- Dashboard -->
+                        <Button x:Name="DashboardButton"
+                                Click="ShowDashboard_Click"
+                                Style="{StaticResource SidebarNavButton}"
+                                Margin="0,0,0,8">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="📊" FontSize="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Dashboard" 
+                                           FontSize="14" 
+                                           FontWeight="SemiBold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        
+                        <!-- Dealers -->
+                        <Button x:Name="DealersButton"
+                                Click="ShowDealers_Click"
+                                Style="{StaticResource SidebarNavButton}"
+                                Margin="0,0,0,8">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="👥" FontSize="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Dealers" 
+                                           FontSize="14" 
+                                           FontWeight="SemiBold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        
+                        <!-- Strings -->
+                        <Button x:Name="StringsButton"
+                                Click="ShowStrings_Click"
+                                Style="{StaticResource SidebarNavButton}"
+                                Margin="0,0,0,8">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🔄" FontSize="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Rotation Strings" 
+                                           FontSize="14" 
+                                           FontWeight="SemiBold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        
+                        <!-- Tables -->
+                        <Button x:Name="TablesButton"
+                                Click="ShowTables_Click"
+                                Style="{StaticResource SidebarNavButton}"
+                                Margin="0,0,0,8">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🎰" FontSize="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Tables" 
+                                           FontSize="14" 
+                                           FontWeight="SemiBold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        
+                        <!-- Analytics -->
+                        <Button x:Name="AnalyticsButton"
+                                Click="ShowAnalytics_Click"
+                                Style="{StaticResource SidebarNavButton}"
+                                Margin="0,0,0,8">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="📈" FontSize="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Analytics" 
+                                           FontSize="14" 
+                                           FontWeight="SemiBold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        
+                        <!-- Settings -->
+                        <Button x:Name="SettingsButton"
+                                Click="ShowSettings_Click"
+                                Style="{StaticResource SidebarNavButton}"
+                                Margin="0,20,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="⚙️" FontSize="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Settings" 
+                                           FontSize="14" 
+                                           FontWeight="SemiBold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </ScrollViewer>
+                
+                <!-- User Section (Bottom) -->
+                <Border Grid.Row="2"
+                        Background="#0F1419"
+                        BorderBrush="{StaticResource LineBrush}"
+                        BorderThickness="0,1,0,0"
+                        Padding="20,15">
+                    <StackPanel>
+                        <TextBlock x:Name="UserInfoText"
+                                   FontSize="12" 
+                                   Foreground="{StaticResource TextMutedBrush}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,12"/>
+                        <Button Content="🚪 Logout" 
+                                Click="Logout_Click"
+                                Style="{StaticResource SidebarNavButton}"
+                                HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+                </Border>
             </Grid>
         </Border>
         
-        <!-- Content Area -->
-        <Grid Grid.Row="1">
+        <!-- Main Content Area -->
+        <Grid Grid.Column="1">
             <!-- Dashboard View (3-Section Layout) -->
             <Grid x:Name="DashboardView" Margin="20">
                 <Grid.RowDefinitions>

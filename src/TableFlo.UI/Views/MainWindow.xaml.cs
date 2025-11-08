@@ -44,6 +44,9 @@ public partial class MainWindow : Window
         TablesView.DataContext = _tableViewModel;
         AnalyticsView.DataContext = _analyticsViewModel;
         SettingsView.DataContext = _settingsViewModel;
+        
+        // Show Dashboard by default
+        ShowView("Dashboard");
     }
 
     private void ShowDashboard_Click(object sender, RoutedEventArgs e)
@@ -78,6 +81,9 @@ public partial class MainWindow : Window
 
     private void ShowView(string viewName)
     {
+        // Reset all button styles
+        ResetButtonStyles();
+        
         // Hide all views
         DashboardView.Visibility = Visibility.Collapsed;
         DealersView.Visibility = Visibility.Collapsed;
@@ -86,28 +92,52 @@ public partial class MainWindow : Window
         AnalyticsView.Visibility = Visibility.Collapsed;
         SettingsView.Visibility = Visibility.Collapsed;
 
-        // Show selected view
+        // Show selected view and highlight active button
         switch (viewName)
         {
             case "Dashboard":
                 DashboardView.Visibility = Visibility.Visible;
+                SetActiveButton(DashboardButton);
                 break;
             case "Dealers":
                 DealersView.Visibility = Visibility.Visible;
+                SetActiveButton(DealersButton);
                 break;
             case "Strings":
                 StringsView.Visibility = Visibility.Visible;
+                SetActiveButton(StringsButton);
                 break;
             case "Tables":
                 TablesView.Visibility = Visibility.Visible;
+                SetActiveButton(TablesButton);
                 break;
             case "Analytics":
                 AnalyticsView.Visibility = Visibility.Visible;
+                SetActiveButton(AnalyticsButton);
                 break;
             case "Settings":
                 SettingsView.Visibility = Visibility.Visible;
+                SetActiveButton(SettingsButton);
                 break;
         }
+    }
+    
+    private void ResetButtonStyles()
+    {
+        var buttons = new[] { DashboardButton, DealersButton, StringsButton, TablesButton, AnalyticsButton, SettingsButton };
+        foreach (var button in buttons)
+        {
+            button.Background = System.Windows.Media.Brushes.Transparent;
+            button.Tag = null;
+        }
+    }
+    
+    private void SetActiveButton(System.Windows.Controls.Button button)
+    {
+        // Active state: darker background with subtle accent
+        var activeBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(23, 30, 38));
+        button.Background = activeBrush;
+        button.Tag = "Active"; // Mark as active for styling
     }
 
     private async void Logout_Click(object sender, RoutedEventArgs e)
