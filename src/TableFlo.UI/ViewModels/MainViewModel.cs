@@ -37,9 +37,13 @@ public class MainViewModel : ViewModelBase
 
         // Initialize commands
         PushAllTablesCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand(PushAllTablesAsync);
+        PushSingleTableCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand<int>(PushSingleTableAsync);
+        SwapDealersCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand<int>(SwapDealersAsync);
+        SendDealerHomeCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand<int>(SendDealerHomeAsync);
         GenerateScheduleCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand(GenerateScheduleAsync);
         SendToBreakCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand(SendToBreakAsync);
         ReturnFromBreakCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand<int>(ReturnFromBreakAsync);
+        AssignDealerToTableCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand<string>(AssignDealerToTableAsync);
         RefreshCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand(LoadDashboardDataAsync);
 
         // Load data on startup
@@ -92,12 +96,46 @@ public class MainViewModel : ViewModelBase
 
     #endregion
 
+    private int _availableDealers;
+    public int AvailableDealers
+    {
+        get => _availableDealers;
+        set => SetProperty(ref _availableDealers, value);
+    }
+
+    private int _dealingCount;
+    public int DealingCount
+    {
+        get => _dealingCount;
+        set => SetProperty(ref _dealingCount, value);
+    }
+
+    private int _reliefNeeded;
+    public int ReliefNeeded
+    {
+        get => _reliefNeeded;
+        set => SetProperty(ref _reliefNeeded, value);
+    }
+
+    private TableRowViewModel? _selectedCurrentTable;
+    public TableRowViewModel? SelectedCurrentTable
+    {
+        get => _selectedCurrentTable;
+        set => SetProperty(ref _selectedCurrentTable, value);
+    }
+
+    #endregion
+
     #region Commands
 
     public ICommand PushAllTablesCommand { get; }
+    public ICommand PushSingleTableCommand { get; }
+    public ICommand SwapDealersCommand { get; }
+    public ICommand SendDealerHomeCommand { get; }
     public ICommand GenerateScheduleCommand { get; }
     public ICommand SendToBreakCommand { get; }
     public ICommand ReturnFromBreakCommand { get; }
+    public ICommand AssignDealerToTableCommand { get; }
     public ICommand RefreshCommand { get; }
 
     #endregion
@@ -134,6 +172,7 @@ public class MainViewModel : ViewModelBase
                 // Current dealer info
                 var currentAssignment = table.CurrentAssignments.FirstOrDefault();
                 var currentDealerName = currentAssignment?.Dealer?.Employee?.FullName ?? "No Dealer";
+                var currentDealerId = currentAssignment?.DealerId ?? 0;
                 var timeInMinutes = currentAssignment != null
                     ? (int)(DateTime.UtcNow - currentAssignment.StartTime).TotalMinutes
                     : 0;
@@ -144,19 +183,24 @@ public class MainViewModel : ViewModelBase
                     TableNumber = table.TableNumber,
                     GameType = table.GameType.ToString(),
                     CurrentDealerName = currentDealerName,
-                    TimeInMinutes = $"{timeInMinutes}m"
+                    CurrentDealerId = currentDealerId,
+                    TimeInMinutes = $"{timeInMinutes}m",
+                    ActualMinutes = timeInMinutes
                 });
 
-                // Next dealer info
+                // Next dealer info (replacement)
                 var nextAssignment = table.NextAssignments.FirstOrDefault();
                 var nextDealerName = nextAssignment?.Dealer?.Employee?.FullName ?? "TBD";
+                var nextDealerId = nextAssignment?.DealerId ?? 0;
 
                 nextTablesList.Add(new TableRowViewModel
                 {
                     TableId = table.Id,
                     TableNumber = table.TableNumber,
                     GameType = table.GameType.ToString(),
-                    NextDealerName = nextDealerName
+                    NextDealerName = nextDealerName,
+                    NextDealerId = nextDealerId,
+                    ReplacingDealerName = currentDealerName // Show who they're replacing
                 });
             }
 
@@ -181,7 +225,14 @@ public class MainViewModel : ViewModelBase
             }
 
             DealersOnBreak = breakList;
-            StatusMessage = $"Loaded {tables.Count} tables, {dealersOnBreak.Count()} on break";
+            
+            // Calculate relief pool stats
+            var allDealers = await _context.Dealers.ToListAsync();
+            AvailableDealers = allDealers.Count(d => d.Status == DealerStatus.Available);
+            DealingCount = allDealers.Count(d => d.Status == DealerStatus.Dealing);
+            ReliefNeeded = tables.Count - DealingCount; // Tables without dealers
+            
+            StatusMessage = $"Loaded {tables.Count} tables | {AvailableDealers} available | {DealingCount} dealing | {dealersOnBreak.Count()} on break";
         }
         catch (Exception ex)
         {
@@ -411,6 +462,150 @@ public class MainViewModel : ViewModelBase
         }
     }
 
+    /// <summary>
+    /// Push single table - swap current and next dealer for one table
+    /// </summary>
+    private async Task PushSingleTableAsync(int tableId)
+    {
+        try
+        {
+            IsLoading = true;
+            var employeeId = SessionManager.CurrentEmployee?.Id ?? 0;
+            
+            await _rotationService.ExecutePushAsync(tableId, employeeId);
+            
+            await _auditService.LogActionAsync(
+                employeeId,
+                ActionType.PushExecuted,
+                $"Single table push executed for table ID {tableId}"
+            );
+
+            await LoadDashboardDataAsync();
+            MessageBox.Show("Table pushed successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error pushing table: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Swap two specific dealers
+    /// </summary>
+    private async Task SwapDealersAsync(int tableId)
+    {
+        try
+        {
+            // This would show a dialog to select dealers to swap
+            MessageBox.Show("Swap functionality - Select dealers from dialog (coming soon)", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error swapping dealers: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    /// <summary>
+    /// Send dealer home (remove from shift)
+    /// </summary>
+    private async Task SendDealerHomeAsync(int dealerId)
+    {
+        try
+        {
+            var dealer = await _context.Dealers
+                .Include(d => d.Employee)
+                .FirstOrDefaultAsync(d => d.Id == dealerId);
+
+            if (dealer == null)
+                return;
+
+            var result = MessageBox.Show(
+                $"Are you sure you want to send {dealer.Employee?.FullName} home?",
+                "Confirm Send Home",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            IsLoading = true;
+
+            // Remove from any current assignments
+            var currentAssignment = await _context.Assignments
+                .Where(a => a.DealerId == dealerId && a.IsCurrent && a.EndTime == null)
+                .FirstOrDefaultAsync();
+
+            if (currentAssignment != null)
+            {
+                currentAssignment.EndTime = DateTime.UtcNow;
+            }
+
+            // Mark dealer as sent home
+            dealer.Status = DealerStatus.SentHome;
+            await _context.SaveChangesAsync();
+
+            await _auditService.LogActionAsync(
+                SessionManager.CurrentEmployee?.Id ?? 0,
+                ActionType.DealerSentHome,
+                $"Sent {dealer.Employee?.FullName} home"
+            );
+
+            await LoadDashboardDataAsync();
+            MessageBox.Show($"{dealer.Employee?.FullName} sent home successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error sending dealer home: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Assign specific dealer to specific table
+    /// </summary>
+    private async Task AssignDealerToTableAsync(string parameters)
+    {
+        try
+        {
+            // Parameters format: "dealerId,tableId"
+            var parts = parameters.Split(',');
+            if (parts.Length != 2)
+                return;
+
+            var dealerId = int.Parse(parts[0]);
+            var tableId = int.Parse(parts[1]);
+
+            IsLoading = true;
+            var employeeId = SessionManager.CurrentEmployee?.Id ?? 0;
+
+            await _rotationService.AssignDealerAsync(dealerId, tableId, true, employeeId);
+
+            await _auditService.LogActionAsync(
+                employeeId,
+                ActionType.DealerAssigned,
+                $"Assigned dealer ID {dealerId} to table ID {tableId}"
+            );
+
+            await LoadDashboardDataAsync();
+            MessageBox.Show("Dealer assigned successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error assigning dealer: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
     #endregion
 }
 
@@ -423,8 +618,12 @@ public class TableRowViewModel
     public string TableNumber { get; set; } = string.Empty;
     public string GameType { get; set; } = string.Empty;
     public string CurrentDealerName { get; set; } = string.Empty;
+    public int CurrentDealerId { get; set; }
     public string TimeInMinutes { get; set; } = string.Empty;
+    public int ActualMinutes { get; set; } // For calculations/sorting
     public string NextDealerName { get; set; } = string.Empty;
+    public int NextDealerId { get; set; }
+    public string ReplacingDealerName { get; set; } = string.Empty; // Shows who is being replaced
 }
 
 /// <summary>

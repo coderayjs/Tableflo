@@ -85,13 +85,82 @@
         <Grid Grid.Row="1">
             <!-- Dashboard View (3-Section Layout) -->
             <Grid x:Name="DashboardView" Margin="20">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1.2*"/>
-                    <ColumnDefinition Width="16"/>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="16"/>
-                    <ColumnDefinition Width="0.7*"/>
-                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="16"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <!-- Relief Pool Stats Bar -->
+                <Border Grid.Row="0" 
+                        Background="{StaticResource BackgroundPanelBrush}"
+                        BorderBrush="{StaticResource LineBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="20,15">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="📋 Available Dealers" 
+                                       FontSize="12" 
+                                       Foreground="{StaticResource TextMutedBrush}"
+                                       Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding AvailableDealers}" 
+                                       FontSize="28" 
+                                       FontWeight="Bold"
+                                       Foreground="#10B981"/>
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="🎰 Currently Dealing" 
+                                       FontSize="12" 
+                                       Foreground="{StaticResource TextMutedBrush}"
+                                       Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding DealingCount}" 
+                                       FontSize="28" 
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource AccentOrangeBrush}"/>
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="⏸️ On Break" 
+                                       FontSize="12" 
+                                       Foreground="{StaticResource TextMutedBrush}"
+                                       Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding DealersOnBreak.Count}" 
+                                       FontSize="28" 
+                                       FontWeight="Bold"
+                                       Foreground="#F59E0B"/>
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Column="3">
+                            <TextBlock Text="🆘 Relief Needed" 
+                                       FontSize="12" 
+                                       Foreground="{StaticResource TextMutedBrush}"
+                                       Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding ReliefNeeded}" 
+                                       FontSize="28" 
+                                       FontWeight="Bold"
+                                       Foreground="#DC2626"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                
+                <!-- Main 3-Section Grid -->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.2*"/>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="0.7*"/>
+                    </Grid.ColumnDefinitions>
                 
                 <!-- Section 1: Current Dealers -->
                 <Border Grid.Column="0" 
@@ -119,12 +188,26 @@
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                             <DataGrid x:Name="CurrentDealersGrid"
                                       ItemsSource="{Binding CurrentTables}"
+                                      SelectedItem="{Binding SelectedCurrentTable}"
                                       Style="{StaticResource ModernDataGrid}"
                                       ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}"
                                       CellStyle="{StaticResource DataGridCellStyle}"
                                       Margin="10"
                                       AutoGenerateColumns="False"
                                       IsReadOnly="True">
+                                <DataGrid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="🔄 Push This Table" 
+                                                  Command="{Binding PushSingleTableCommand}"
+                                                  CommandParameter="{Binding SelectedCurrentTable.TableId}"/>
+                                        <MenuItem Header="🏠 Send Dealer Home" 
+                                                  Command="{Binding SendDealerHomeCommand}"
+                                                  CommandParameter="{Binding SelectedCurrentTable.CurrentDealerId}"/>
+                                        <Separator/>
+                                        <MenuItem Header="⏸️ Send to Break" 
+                                                  Command="{Binding SendToBreakCommand}"/>
+                                    </ContextMenu>
+                                </DataGrid.ContextMenu>
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Table" Binding="{Binding TableNumber}" Width="90"/>
                                     <DataGridTextColumn Header="Game" Binding="{Binding GameType}" Width="100"/>
@@ -187,6 +270,7 @@
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Table" Binding="{Binding TableNumber}" Width="90"/>
                                     <DataGridTextColumn Header="Next Dealer" Binding="{Binding NextDealerName}" Width="*"/>
+                                    <DataGridTextColumn Header="Replacing" Binding="{Binding ReplacingDealerName}" Width="*"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </ScrollViewer>
@@ -280,6 +364,7 @@
                         </Border>
                     </Grid>
                 </Border>
+                </Grid>
             </Grid>
             
             <!-- Dealers View (REAL FUNCTIONALITY) -->
