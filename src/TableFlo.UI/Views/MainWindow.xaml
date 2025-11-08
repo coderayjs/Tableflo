@@ -56,6 +56,11 @@
                             Style="{StaticResource SecondaryButton}"
                             Click="ShowDealers_Click"
                             Margin="5,0"/>
+                    <Button x:Name="StringsButton"
+                            Content="Strings" 
+                            Style="{StaticResource SecondaryButton}"
+                            Click="ShowStrings_Click"
+                            Margin="5,0"/>
                     <Button x:Name="TablesButton"
                             Content="Tables" 
                             Style="{StaticResource SecondaryButton}"
@@ -631,6 +636,224 @@
                                            Foreground="{StaticResource TextMutedBrush}"
                                            TextWrapping="Wrap"
                                            Margin="0,20,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+            
+            <!-- Strings View -->
+            <Grid x:Name="StringsView" Margin="20" Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                
+                <!-- Strings List -->
+                <Border Grid.Column="0"
+                        Background="{StaticResource BackgroundPanelBrush}"
+                        BorderBrush="{StaticResource LineBrush}"
+                        BorderThickness="1"
+                        CornerRadius="12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        
+                        <!-- Header -->
+                        <Border Grid.Row="0"
+                                BorderBrush="{StaticResource LineBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="20,15">
+                            <Grid>
+                                <TextBlock Text="Rotation Strings" 
+                                           FontSize="18" 
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"/>
+                                <Button Content="Refresh"
+                                        Command="{Binding RefreshCommand}"
+                                        Style="{StaticResource SecondaryButton}"
+                                        HorizontalAlignment="Right"/>
+                            </Grid>
+                        </Border>
+                        
+                        <!-- Strings Grid -->
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                            <DataGrid ItemsSource="{Binding Strings}"
+                                      SelectedItem="{Binding SelectedString}"
+                                      Style="{StaticResource ModernDataGrid}"
+                                      ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}"
+                                      CellStyle="{StaticResource DataGridCellStyle}"
+                                      Margin="20"
+                                      AutoGenerateColumns="False"
+                                      IsReadOnly="True">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                                    <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="2*"/>
+                                    <DataGridTextColumn Header="Dealers" Binding="{Binding DealerCount}" Width="100"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+                
+                <!-- String Details & Actions -->
+                <Border Grid.Column="2"
+                        Background="{StaticResource BackgroundPanelBrush}"
+                        BorderBrush="{StaticResource LineBrush}"
+                        BorderThickness="1"
+                        CornerRadius="12">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="30">
+                            <!-- Edit Form -->
+                            <StackPanel>
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsEditing}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                
+                                <TextBlock FontSize="18" 
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           Margin="0,0,0,20">
+                                    <TextBlock.Text>
+                                        <Binding Path="IsNewString">
+                                            <Binding.Converter>
+                                                <local:BoolToStringConverter TrueValue="New String" FalseValue="Edit String"/>
+                                            </Binding.Converter>
+                                        </Binding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                                
+                                <TextBlock Text="Name" 
+                                           FontSize="12"
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           Margin="0,0,0,5"/>
+                                <TextBox Text="{Binding StringName, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,0,15"/>
+                                
+                                <TextBlock Text="Description" 
+                                           FontSize="12"
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           Margin="0,0,0,5"/>
+                                <TextBox Text="{Binding StringDescription, UpdateSourceTrigger=PropertyChanged}"
+                                         TextWrapping="Wrap"
+                                         AcceptsReturn="True"
+                                         Style="{StaticResource ModernTextBox}"
+                                         Height="80"
+                                         Margin="0,0,0,15"/>
+                                
+                                <Button Content="✓ Save"
+                                        Command="{Binding SaveStringCommand}"
+                                        Style="{StaticResource PrimaryButton}"
+                                        Margin="0,0,0,10"/>
+                                <Button Content="✖ Cancel"
+                                        Command="{Binding CancelEditCommand}"
+                                        Style="{StaticResource SecondaryButton}"/>
+                            </StackPanel>
+                            
+                            <!-- View Mode -->
+                            <StackPanel>
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsEditing}" Value="False">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                
+                                <TextBlock Text="String Actions" 
+                                           FontSize="18" 
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           Margin="0,0,0,20"/>
+                                
+                                <Button Content="➕ Create New String"
+                                        Command="{Binding CreateStringCommand}"
+                                        Style="{StaticResource PrimaryButton}"
+                                        Margin="0,0,0,10"/>
+                                <Button Content="✏️ Edit Selected"
+                                        Command="{Binding EditStringCommand}"
+                                        Style="{StaticResource PrimaryButton}"
+                                        Margin="0,0,0,10"/>
+                                <Button Content="🗑️ Delete Selected"
+                                        Command="{Binding DeleteStringCommand}"
+                                        Style="{StaticResource DangerButton}"
+                                        Margin="0,0,0,20"/>
+                                
+                                <!-- Dealers in String -->
+                                <TextBlock Text="Dealers in String" 
+                                           FontSize="16" 
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           Margin="0,20,0,10"/>
+                                
+                                <ScrollViewer MaxHeight="200" VerticalScrollBarVisibility="Auto">
+                                    <ItemsControl ItemsSource="{Binding StringDealers}" Margin="0,0,0,10">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="#1B2633" 
+                                                        BorderBrush="{StaticResource LineBrush}"
+                                                        BorderThickness="1"
+                                                        CornerRadius="6"
+                                                        Padding="10,8"
+                                                        Margin="0,0,0,8">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Column="0" 
+                                                                   Text="{Binding DealerName}" 
+                                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                                   FontSize="12"
+                                                                   VerticalAlignment="Center"/>
+                                                        <TextBlock Grid.Column="1" 
+                                                                   Text="{Binding RotationOrder, StringFormat='Order: {0}'}" 
+                                                                   Foreground="{StaticResource TextMutedBrush}"
+                                                                   FontSize="11"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="10,0,0,0"/>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                                
+                                <Button Content="➖ Remove Selected"
+                                        Command="{Binding RemoveDealerFromStringCommand}"
+                                        Style="{StaticResource SecondaryButton}"
+                                        Margin="0,10,0,20"/>
+                                
+                                <!-- Add Dealer to String -->
+                                <TextBlock Text="Add Dealer to String" 
+                                           FontSize="16" 
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           Margin="0,20,0,10"/>
+                                
+                                <ComboBox ItemsSource="{Binding AllDealers}"
+                                          SelectedItem="{Binding SelectedDealer}"
+                                          DisplayMemberPath="Name"
+                                          Style="{StaticResource ModernTextBox}"
+                                          Margin="0,0,0,10"/>
+                                
+                                <Button Content="➕ Add to String"
+                                        Command="{Binding AddDealerToStringCommand}"
+                                        Style="{StaticResource PrimaryButton}"/>
                             </StackPanel>
                         </StackPanel>
                     </ScrollViewer>

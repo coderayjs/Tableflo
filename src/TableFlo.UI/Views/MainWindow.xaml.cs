@@ -12,6 +12,7 @@ public partial class MainWindow : Window
 {
     private readonly MainViewModel _mainViewModel;
     private readonly DealerManagementViewModel _dealerViewModel;
+    private readonly StringManagementViewModel _stringViewModel;
     private readonly TableManagementViewModel _tableViewModel;
     private readonly AnalyticsViewModel _analyticsViewModel;
 
@@ -22,6 +23,7 @@ public partial class MainWindow : Window
         // Get ViewModels from DI
         _mainViewModel = App.GetService<MainViewModel>();
         _dealerViewModel = App.GetService<DealerManagementViewModel>();
+        _stringViewModel = App.GetService<StringManagementViewModel>();
         _tableViewModel = App.GetService<TableManagementViewModel>();
         _analyticsViewModel = App.GetService<AnalyticsViewModel>();
         
@@ -36,6 +38,7 @@ public partial class MainWindow : Window
         
         // Set DataContext for each view
         DealersView.DataContext = _dealerViewModel;
+        StringsView.DataContext = _stringViewModel;
         TablesView.DataContext = _tableViewModel;
         AnalyticsView.DataContext = _analyticsViewModel;
     }
@@ -48,6 +51,11 @@ public partial class MainWindow : Window
     private void ShowDealers_Click(object sender, RoutedEventArgs e)
     {
         ShowView("Dealers");
+    }
+
+    private void ShowStrings_Click(object sender, RoutedEventArgs e)
+    {
+        ShowView("Strings");
     }
 
     private void ShowTables_Click(object sender, RoutedEventArgs e)
@@ -65,6 +73,7 @@ public partial class MainWindow : Window
         // Hide all views
         DashboardView.Visibility = Visibility.Collapsed;
         DealersView.Visibility = Visibility.Collapsed;
+        StringsView.Visibility = Visibility.Collapsed;
         TablesView.Visibility = Visibility.Collapsed;
         AnalyticsView.Visibility = Visibility.Collapsed;
 
@@ -76,6 +85,9 @@ public partial class MainWindow : Window
                 break;
             case "Dealers":
                 DealersView.Visibility = Visibility.Visible;
+                break;
+            case "Strings":
+                StringsView.Visibility = Visibility.Visible;
                 break;
             case "Tables":
                 TablesView.Visibility = Visibility.Visible;

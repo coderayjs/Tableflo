@@ -68,6 +68,7 @@ public partial class App : Application
                 services.AddTransient<LoginViewModel>();
                 services.AddTransient<MainViewModel>();
                 services.AddScoped<DealerManagementViewModel>(); // Scoped to maintain state
+                services.AddScoped<StringManagementViewModel>(); // Scoped to maintain state
                 services.AddTransient<TableManagementViewModel>();
                 services.AddTransient<AnalyticsViewModel>();
             })
