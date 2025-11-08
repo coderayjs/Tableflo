@@ -65,15 +65,15 @@ public class StringManagementViewModel : ViewModelBase
         }
     }
 
-    private ObservableCollection<DealerViewModel> _allDealers = new();
-    public ObservableCollection<DealerViewModel> AllDealers
+    private ObservableCollection<DealerSelectionViewModel> _allDealers = new();
+    public ObservableCollection<DealerSelectionViewModel> AllDealers
     {
         get => _allDealers;
         set => SetProperty(ref _allDealers, value);
     }
 
-    private DealerViewModel? _selectedDealer;
-    public DealerViewModel? SelectedDealer
+    private DealerSelectionViewModel? _selectedDealer;
+    public DealerSelectionViewModel? SelectedDealer
     {
         get => _selectedDealer;
         set
@@ -170,12 +170,12 @@ public class StringManagementViewModel : ViewModelBase
             .Include(d => d.Employee)
             .ToListAsync();
 
-        var dealerViewModels = new ObservableCollection<DealerViewModel>();
+        var dealerViewModels = new ObservableCollection<DealerSelectionViewModel>();
         foreach (var dealer in dealers)
         {
             if (dealer.Employee != null)
             {
-                dealerViewModels.Add(new DealerViewModel
+                dealerViewModels.Add(new DealerSelectionViewModel
                 {
                     Id = dealer.Id,
                     Name = dealer.Employee.FullName,
@@ -370,7 +370,7 @@ public class StringManagementViewModel : ViewModelBase
     #endregion
 }
 
-public class DealerViewModel
+public class DealerSelectionViewModel
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
