@@ -947,7 +947,15 @@
             
             <!-- Tables View -->
             <Grid x:Name="TablesView" Margin="20" Visibility="Collapsed">
-                <Border Background="{StaticResource BackgroundPanelBrush}"
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.5*"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                
+                <!-- Left: Tables Grid -->
+                <Border Grid.Column="0"
+                        Background="{StaticResource BackgroundPanelBrush}"
                         BorderBrush="{StaticResource LineBrush}"
                         BorderThickness="1"
                         CornerRadius="12">
@@ -964,9 +972,9 @@
                                 BorderThickness="0,0,0,1"
                                 Padding="20,15">
                             <Grid>
-                        <TextBlock Text="Table Management" 
+                                <TextBlock Text="Table Management" 
                                            FontSize="18" 
-                                   FontWeight="Bold"
+                                           FontWeight="Bold"
                                            Foreground="{StaticResource TextPrimaryBrush}"/>
                                 <Button Content="Refresh"
                                         Command="{Binding RefreshCommand}"
@@ -1002,17 +1010,205 @@
                                 BorderThickness="0,1,0,0"
                                 Padding="20,15">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button Content="Open Table"
+                                <Button Content="➕ Add Table"
+                                        Command="{Binding AddTableCommand}"
+                                        Style="{StaticResource PrimaryButton}"
+                                        Margin="5"/>
+                                <Button Content="✏️ Edit"
+                                        Command="{Binding EditTableCommand}"
+                                        Style="{StaticResource SecondaryButton}"
+                                        Margin="5"/>
+                                <Button Content="🗑️ Delete"
+                                        Command="{Binding DeleteTableCommand}"
+                                        Style="{StaticResource DangerButton}"
+                                        Margin="5"/>
+                                <Button Content="▶️ Open"
                                         Command="{Binding OpenTableCommand}"
                                         Style="{StaticResource PrimaryButton}"
                                         Margin="5"/>
-                                <Button Content="Close Table"
+                                <Button Content="⏸️ Close"
                                         Command="{Binding CloseTableCommand}"
                                         Style="{StaticResource DangerButton}"
                                         Margin="5"/>
-                    </StackPanel>
+                            </StackPanel>
                         </Border>
                     </Grid>
+                </Border>
+                
+                <!-- Right: Edit Form -->
+                <Border Grid.Column="2"
+                        Background="{StaticResource BackgroundPanelBrush}"
+                        BorderBrush="{StaticResource LineBrush}"
+                        BorderThickness="1"
+                        CornerRadius="12">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="30">
+                            <!-- Edit Form -->
+                            <StackPanel>
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsEditing}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                
+                                <TextBlock Text="{Binding IsNewTable, Converter={StaticResource BoolToStringConverter}, ConverterParameter='Add New Table|Edit Table'}" 
+                                           FontSize="18" 
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           Margin="0,0,0,10"/>
+                                
+                                <!-- Validation Error -->
+                                <TextBlock Text="{Binding ValidationError}"
+                                           Foreground="#DC2626"
+                                           FontSize="12"
+                                           TextWrapping="Wrap"
+                                           Margin="0,0,0,15"
+                                           Visibility="{Binding ValidationError, Converter={StaticResource StringToVisibilityConverter}}"/>
+                                
+                                <!-- Table Number -->
+                                <TextBlock Text="Table Number *" 
+                                           FontSize="12"
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           Margin="0,0,0,5"/>
+                                <TextBox Text="{Binding TableNumber, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,0,15"
+                                         KeyDown="TableForm_KeyDown"/>
+                                
+                                <!-- Game Type -->
+                                <TextBlock Text="Game Type *" 
+                                           FontSize="12"
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           Margin="0,0,0,5"/>
+                                <ComboBox ItemsSource="{Binding GameTypes}"
+                                          SelectedItem="{Binding GameType}"
+                                          Background="{StaticResource BackgroundInputBrush}"
+                                          Foreground="{StaticResource TextPrimaryBrush}"
+                                          BorderBrush="{StaticResource LineBrush}"
+                                          BorderThickness="1"
+                                          Padding="12,8"
+                                          FontSize="14"
+                                          Margin="0,0,0,15"/>
+                                
+                                <!-- Min Bet -->
+                                <TextBlock Text="Minimum Bet ($) *" 
+                                           FontSize="12"
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           Margin="0,0,0,5"/>
+                                <TextBox x:Name="MinBetTextBox"
+                                         Text="{Binding MinBet, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource ModernTextBox}"
+                                         PreviewTextInput="NumericTextBox_PreviewTextInput"
+                                         Margin="0,0,0,15"/>
+                                
+                                <!-- Max Bet -->
+                                <TextBlock Text="Maximum Bet ($) *" 
+                                           FontSize="12"
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           Margin="0,0,0,5"/>
+                                <TextBox x:Name="MaxBetTextBox"
+                                         Text="{Binding MaxBet, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource ModernTextBox}"
+                                         PreviewTextInput="NumericTextBox_PreviewTextInput"
+                                         Margin="0,0,0,15"/>
+                                
+                                <!-- Pit Location -->
+                                <TextBlock Text="Pit Location" 
+                                           FontSize="12"
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           Margin="0,0,0,5"/>
+                                <TextBox Text="{Binding PitLocation, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,0,15"/>
+                                
+                                <!-- High Limit -->
+                                <CheckBox Content="High Limit Table"
+                                          IsChecked="{Binding IsHighLimit}"
+                                          Foreground="{StaticResource TextPrimaryBrush}"
+                                          FontSize="12"
+                                          Margin="0,0,0,15"/>
+                                
+                                <!-- Required Dealer Count -->
+                                <TextBlock Text="Required Dealer Count *" 
+                                           FontSize="12"
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           Margin="0,0,0,5"/>
+                                <TextBox x:Name="RequiredDealerCountTextBox"
+                                         Text="{Binding RequiredDealerCount, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource ModernTextBox}"
+                                         PreviewTextInput="IntegerTextBox_PreviewTextInput"
+                                         Margin="0,0,0,15"/>
+                                
+                                <!-- Push Interval -->
+                                <TextBlock Text="Push Interval (Minutes) *" 
+                                           FontSize="12"
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           Margin="0,0,0,5"/>
+                                <TextBox x:Name="PushIntervalTextBox"
+                                         Text="{Binding PushIntervalMinutes, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource ModernTextBox}"
+                                         PreviewTextInput="IntegerTextBox_PreviewTextInput"
+                                         Margin="0,0,0,20"/>
+                                
+                                <!-- Loading Indicator -->
+                                <StackPanel Orientation="Horizontal" 
+                                            HorizontalAlignment="Center"
+                                            Margin="0,0,0,10"
+                                            Visibility="{Binding IsSaving, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <TextBlock Text="Saving..." 
+                                               Foreground="{StaticResource TextMutedBrush}"
+                                               FontSize="12"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,10,0"/>
+                                    <ProgressBar IsIndeterminate="True" 
+                                                 Width="100" 
+                                                 Height="4"/>
+                                </StackPanel>
+                                
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+                                    <Button Content="✓ Save (Ctrl+S)"
+                                            Command="{Binding SaveTableCommand}"
+                                            Style="{StaticResource PrimaryButton}"
+                                            IsEnabled="{Binding IsSaving, Converter={StaticResource InverseBoolConverter}}"
+                                            Margin="0,0,10,0"/>
+                                    <Button Content="✖ Cancel (Esc)"
+                                            Command="{Binding CancelEditCommand}"
+                                            Style="{StaticResource SecondaryButton}"
+                                            IsEnabled="{Binding IsSaving, Converter={StaticResource InverseBoolConverter}}"/>
+                                </StackPanel>
+                            </StackPanel>
+                            
+                            <!-- View Mode (when not editing) -->
+                            <StackPanel>
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsEditing}" Value="False">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                
+                                <TextBlock Text="Table Details" 
+                                           FontSize="18" 
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           Margin="0,0,0,20"/>
+                                
+                                <TextBlock Text="Select a table from the list to view or edit details."
+                                           FontSize="12"
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
                 </Border>
             </Grid>
             

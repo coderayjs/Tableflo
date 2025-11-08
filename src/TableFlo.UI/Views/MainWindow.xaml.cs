@@ -1,4 +1,6 @@
+using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Input;
 using TableFlo.Services.Interfaces;
 using TableFlo.Core.Enums;
 using TableFlo.UI.ViewModels;
@@ -161,6 +163,69 @@ public partial class MainWindow : Window
 
         // Close this window
         Close();
+    }
+
+    // Numeric validation for decimal inputs (MinBet, MaxBet)
+    private void NumericTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+    {
+        var textBox = sender as System.Windows.Controls.TextBox;
+        if (textBox == null) return;
+
+        // Allow only digits and one decimal point
+        var regex = new Regex(@"^[0-9]*\.?[0-9]*$");
+        
+        // Get the current text and the new character
+        var currentText = textBox.Text ?? string.Empty;
+        var newText = currentText.Insert(textBox.CaretIndex, e.Text);
+        
+        // Check if the new text would be a valid decimal number
+        if (!regex.IsMatch(newText))
+        {
+            e.Handled = true;
+            return;
+        }
+
+        // Additional check: only one decimal point allowed
+        if (e.Text == "." && currentText.Contains("."))
+        {
+            e.Handled = true;
+        }
+    }
+
+    // Integer validation for RequiredDealerCount, PushIntervalMinutes
+    private void IntegerTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+    {
+        var regex = new Regex(@"^[0-9]+$");
+        if (!regex.IsMatch(e.Text))
+        {
+            e.Handled = true;
+        }
+    }
+
+    // Keyboard shortcuts for table form
+    private void TableForm_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.S && Keyboard.Modifiers == ModifierKeys.Control)
+        {
+            // Ctrl+S to save
+            if (_tableViewModel != null && _tableViewModel.IsEditing)
+            {
+                if (_tableViewModel.SaveTableCommand.CanExecute(null))
+                {
+                    _tableViewModel.SaveTableCommand.Execute(null);
+                }
+            }
+            e.Handled = true;
+        }
+        else if (e.Key == Key.Escape)
+        {
+            // Esc to cancel
+            if (_tableViewModel != null && _tableViewModel.IsEditing)
+            {
+                _tableViewModel.CancelEditCommand.Execute(null);
+            }
+            e.Handled = true;
+        }
     }
 }
 
