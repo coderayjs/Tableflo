@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using TableFlo.Core.Enums;
@@ -23,6 +24,8 @@ public class MainViewModel : ViewModelBase
     private readonly IAuditService _auditService;
     private readonly IRotationStringService _stringService;
     private readonly TableFloDbContext _context;
+    private DispatcherTimer? _updateTimer;
+    private Dictionary<int, DateTime> _assignmentStartTimes = new();
 
     public MainViewModel(
         IUnitOfWork unitOfWork,
@@ -51,6 +54,14 @@ public class MainViewModel : ViewModelBase
         ExecuteStringRotationCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand<int>(ExecuteStringRotationAsync);
         ExportScheduleCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand(ExportScheduleAsync);
         RefreshCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand(LoadDashboardDataAsync);
+
+        // Initialize timer for real-time updates (every 1 minute)
+        _updateTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromMinutes(1)
+        };
+        _updateTimer.Tick += (s, e) => UpdateTimeDisplays();
+        _updateTimer.Start();
 
         // Load data on startup
         _ = LoadDashboardDataAsync();
@@ -186,6 +197,12 @@ public class MainViewModel : ViewModelBase
                 var currentAssignment = table.CurrentAssignments.FirstOrDefault();
                 var currentDealerName = currentAssignment?.Dealer?.Employee?.FullName ?? "No Dealer";
                 var currentDealerId = currentAssignment?.DealerId ?? 0;
+                
+                if (currentAssignment != null)
+                {
+                    _assignmentStartTimes[table.Id] = currentAssignment.StartTime;
+                }
+                
                 var timeInMinutes = currentAssignment != null
                     ? (int)(DateTime.UtcNow - currentAssignment.StartTime).TotalMinutes
                     : 0;
@@ -203,6 +220,9 @@ public class MainViewModel : ViewModelBase
                     timeDisplay = $"{timeInMinutes}m";
                 }
 
+                // Color coding: Red if > 20 minutes, Yellow if > 15 minutes, Green otherwise
+                string timeColor = timeInMinutes > 20 ? "#DC2626" : (timeInMinutes > 15 ? "#F59E0B" : "#10B981");
+
                 currentTablesList.Add(new TableRowViewModel
                 {
                     TableId = table.Id,
@@ -211,7 +231,8 @@ public class MainViewModel : ViewModelBase
                     CurrentDealerName = currentDealerName,
                     CurrentDealerId = currentDealerId,
                     TimeInMinutes = timeDisplay,
-                    ActualMinutes = timeInMinutes
+                    ActualMinutes = timeInMinutes,
+                    TimeColor = timeColor
                 });
 
                 // Next dealer info (replacement)
@@ -855,24 +876,106 @@ public class MainViewModel : ViewModelBase
         }
     }
 
+    /// <summary>
+    /// Update time displays for all tables (called by timer)
+    /// </summary>
+    private void UpdateTimeDisplays()
+    {
+        foreach (var table in CurrentTables)
+        {
+            if (_assignmentStartTimes.TryGetValue(table.TableId, out var startTime))
+            {
+                var timeInMinutes = (int)(DateTime.UtcNow - startTime).TotalMinutes;
+                
+                // Format time display
+                string timeDisplay;
+                if (timeInMinutes >= 60)
+                {
+                    int hours = timeInMinutes / 60;
+                    int minutes = timeInMinutes % 60;
+                    timeDisplay = $"{hours}h {minutes}m";
+                }
+                else
+                {
+                    timeDisplay = $"{timeInMinutes}m";
+                }
+
+                // Update color coding
+                string timeColor = timeInMinutes > 20 ? "#DC2626" : (timeInMinutes > 15 ? "#F59E0B" : "#10B981");
+
+                table.TimeInMinutes = timeDisplay;
+                table.ActualMinutes = timeInMinutes;
+                table.TimeColor = timeColor;
+            }
+        }
+    }
+
     #endregion
 }
 
 /// <summary>
 /// ViewModel for table rows in the grid
 /// </summary>
-public class TableRowViewModel
+public class TableRowViewModel : System.ComponentModel.INotifyPropertyChanged
 {
+    private string _timeInMinutes = string.Empty;
+    private int _actualMinutes;
+    private string _timeColor = "#10B981";
+
     public int TableId { get; set; }
     public string TableNumber { get; set; } = string.Empty;
     public string GameType { get; set; } = string.Empty;
     public string CurrentDealerName { get; set; } = string.Empty;
     public int CurrentDealerId { get; set; }
-    public string TimeInMinutes { get; set; } = string.Empty;
-    public int ActualMinutes { get; set; } // For calculations/sorting
+    
+    public string TimeInMinutes
+    {
+        get => _timeInMinutes;
+        set
+        {
+            if (_timeInMinutes != value)
+            {
+                _timeInMinutes = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+    
+    public int ActualMinutes
+    {
+        get => _actualMinutes;
+        set
+        {
+            if (_actualMinutes != value)
+            {
+                _actualMinutes = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+    
+    public string TimeColor
+    {
+        get => _timeColor;
+        set
+        {
+            if (_timeColor != value)
+            {
+                _timeColor = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+    
     public string NextDealerName { get; set; } = string.Empty;
     public int NextDealerId { get; set; }
     public string ReplacingDealerName { get; set; } = string.Empty; // Shows who is being replaced
+
+    public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+    protected virtual void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+    }
 }
 
 /// <summary>
