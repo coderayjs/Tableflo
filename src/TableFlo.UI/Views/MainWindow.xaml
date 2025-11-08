@@ -678,8 +678,7 @@
                                              Style="{StaticResource ModernTextBox}"
                                              Padding="12,8"
                                              FontSize="13"
-                                             Height="38"
-                                             CornerRadius="8"/>
+                                             Height="38"/>
                                     <TextBlock Text="Dealer employee #"
                                                Foreground="{StaticResource TextMutedBrush}"
                                                FontSize="13"
