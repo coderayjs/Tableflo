@@ -15,6 +15,7 @@ public partial class MainWindow : Window
     private readonly StringManagementViewModel _stringViewModel;
     private readonly TableManagementViewModel _tableViewModel;
     private readonly AnalyticsViewModel _analyticsViewModel;
+    private readonly SettingsViewModel _settingsViewModel;
 
     public MainWindow()
     {
@@ -26,6 +27,7 @@ public partial class MainWindow : Window
         _stringViewModel = App.GetService<StringManagementViewModel>();
         _tableViewModel = App.GetService<TableManagementViewModel>();
         _analyticsViewModel = App.GetService<AnalyticsViewModel>();
+        _settingsViewModel = App.GetService<SettingsViewModel>();
         
         // Set main DataContext (for Dashboard view)
         DataContext = _mainViewModel;
@@ -41,6 +43,7 @@ public partial class MainWindow : Window
         StringsView.DataContext = _stringViewModel;
         TablesView.DataContext = _tableViewModel;
         AnalyticsView.DataContext = _analyticsViewModel;
+        SettingsView.DataContext = _settingsViewModel;
     }
 
     private void ShowDashboard_Click(object sender, RoutedEventArgs e)
@@ -68,6 +71,11 @@ public partial class MainWindow : Window
         ShowView("Analytics");
     }
 
+    private void ShowSettings_Click(object sender, RoutedEventArgs e)
+    {
+        ShowView("Settings");
+    }
+
     private void ShowView(string viewName)
     {
         // Hide all views
@@ -76,6 +84,7 @@ public partial class MainWindow : Window
         StringsView.Visibility = Visibility.Collapsed;
         TablesView.Visibility = Visibility.Collapsed;
         AnalyticsView.Visibility = Visibility.Collapsed;
+        SettingsView.Visibility = Visibility.Collapsed;
 
         // Show selected view
         switch (viewName)
@@ -94,6 +103,9 @@ public partial class MainWindow : Window
                 break;
             case "Analytics":
                 AnalyticsView.Visibility = Visibility.Visible;
+                break;
+            case "Settings":
+                SettingsView.Visibility = Visibility.Visible;
                 break;
         }
     }

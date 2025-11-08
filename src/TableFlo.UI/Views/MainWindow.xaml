@@ -71,6 +71,11 @@
                             Style="{StaticResource SecondaryButton}"
                             Click="ShowAnalytics_Click"
                             Margin="5,0"/>
+                    <Button x:Name="SettingsButton"
+                            Content="Settings" 
+                            Style="{StaticResource SecondaryButton}"
+                            Click="ShowSettings_Click"
+                            Margin="5,0"/>
                 </StackPanel>                
                 <!-- User Info -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
@@ -159,15 +164,15 @@
                 
                 <!-- Main 4-Section Grid -->
                 <Grid Grid.Row="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1.2*"/>
-                        <ColumnDefinition Width="16"/>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="16"/>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.2*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="16"/>
                         <ColumnDefinition Width="0.6*"/>
                         <ColumnDefinition Width="16"/>
                         <ColumnDefinition Width="0.6*"/>
-                    </Grid.ColumnDefinitions>
+                </Grid.ColumnDefinitions>
                 
                 <!-- Section 1: Current Dealers -->
                 <Border Grid.Column="0" 
@@ -345,7 +350,7 @@
                                                            FontSize="12"
                                                            VerticalAlignment="Center"/>
                                                 <Button Grid.Column="1" 
-                                                        Content="×"
+                                                        Content="×" 
                                                         Command="{Binding DataContext.ReturnFromBreakCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                         CommandParameter="{Binding DealerId}"
                                                         Style="{StaticResource SecondaryButton}"
@@ -876,9 +881,9 @@
                                 BorderThickness="0,0,0,1"
                                 Padding="20,15">
                             <Grid>
-                                <TextBlock Text="Table Management" 
+                        <TextBlock Text="Table Management" 
                                            FontSize="18" 
-                                           FontWeight="Bold"
+                                   FontWeight="Bold"
                                            Foreground="{StaticResource TextPrimaryBrush}"/>
                                 <Button Content="Refresh"
                                         Command="{Binding RefreshCommand}"
@@ -922,7 +927,7 @@
                                         Command="{Binding CloseTableCommand}"
                                         Style="{StaticResource DangerButton}"
                                         Margin="5"/>
-                            </StackPanel>
+                    </StackPanel>
                         </Border>
                     </Grid>
                 </Border>
@@ -946,7 +951,7 @@
                                 BorderThickness="0,0,0,1"
                                 Padding="20,15">
                             <Grid>
-                                <TextBlock Text="Analytics Dashboard" 
+                        <TextBlock Text="Analytics Dashboard" 
                                            FontSize="18" 
                                            FontWeight="Bold"
                                            Foreground="{StaticResource TextPrimaryBrush}"/>
@@ -969,8 +974,8 @@
                                 <StackPanel Grid.Row="0" Margin="0,0,0,40">
                                     <TextBlock Text="Dealer Statistics" 
                                                FontSize="22" 
-                                               FontWeight="Bold"
-                                               Foreground="{StaticResource TextPrimaryBrush}"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource TextPrimaryBrush}"
                                                Margin="0,0,0,20"/>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -997,7 +1002,7 @@
                                                 <TextBlock Text="Currently Dealing" 
                                                            FontSize="14" 
                                                            Foreground="{StaticResource TextMutedBrush}"
-                                                           Margin="0,0,0,10"/>
+                                   Margin="0,0,0,10"/>
                                                 <TextBlock Text="{Binding ActiveDealers}" 
                                                            FontSize="48" 
                                                            FontWeight="Bold"
@@ -1008,8 +1013,8 @@
                                         <Border Grid.Column="2" Background="#171E26" CornerRadius="10" Padding="30" Margin="10,0,0,0">
                                             <StackPanel>
                                                 <TextBlock Text="On Break" 
-                                                           FontSize="14" 
-                                                           Foreground="{StaticResource TextMutedBrush}"
+                                   FontSize="14" 
+                                   Foreground="{StaticResource TextMutedBrush}"
                                                            Margin="0,0,0,10"/>
                                                 <TextBlock Text="{Binding DealersOnBreak}" 
                                                            FontSize="48" 
@@ -1026,7 +1031,7 @@
                                                FontSize="22" 
                                                FontWeight="Bold"
                                                Foreground="{StaticResource TextPrimaryBrush}"
-                                               Margin="0,0,0,20"/>
+                                   Margin="0,0,0,20"/>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
@@ -1059,8 +1064,89 @@
                                             </StackPanel>
                                         </Border>
                                     </Grid>
-                                </StackPanel>
+                    </StackPanel>
                             </Grid>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+            </Grid>
+            
+            <!-- Settings View -->
+            <Grid x:Name="SettingsView" Margin="20" Visibility="Collapsed">
+                <Border Background="{StaticResource BackgroundPanelBrush}"
+                        BorderBrush="{StaticResource LineBrush}"
+                        BorderThickness="1"
+                        CornerRadius="12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        
+                        <!-- Header -->
+                        <Border Grid.Row="0"
+                                BorderBrush="{StaticResource LineBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="20,15">
+                            <Grid>
+                                <TextBlock Text="System Settings" 
+                                           FontSize="18" 
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"/>
+                                <Button Content="Refresh"
+                                        Command="{Binding RefreshCommand}"
+                                        Style="{StaticResource SecondaryButton}"
+                                        HorizontalAlignment="Right"/>
+                            </Grid>
+                        </Border>
+                        
+                        <!-- Settings Form -->
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                            <StackPanel Margin="40" MaxWidth="600">
+                                <TextBlock Text="Rotation Settings" 
+                                           FontSize="22" 
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           Margin="0,0,0,30"/>
+                                
+                                <!-- Break Interval -->
+                                <TextBlock Text="Break Interval (minutes)" 
+                                           FontSize="14" 
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           Margin="0,0,0,8"/>
+                                <TextBox Text="{Binding BreakIntervalMinutes, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,0,25"/>
+                                
+                                <!-- Push Interval -->
+                                <TextBlock Text="Push Interval (minutes)" 
+                                           FontSize="14" 
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           Margin="0,0,0,8"/>
+                                <TextBox Text="{Binding PushIntervalMinutes, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,0,25"/>
+                                
+                                <!-- Meal Deadline -->
+                                <TextBlock Text="Meal Deadline (hours)" 
+                                           FontSize="14" 
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           Margin="0,0,0,8"/>
+                                <TextBox Text="{Binding MealDeadlineHours, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,0,30"/>
+                                
+                                <Button Content="💾 Save Settings"
+                                        Command="{Binding SaveSettingsCommand}"
+                                        Style="{StaticResource PrimaryButton}"
+                                        HorizontalAlignment="Left"
+                                        Padding="20,10"/>
+                                
+                                <TextBlock Text="{Binding StatusMessage}" 
+                                           FontSize="12" 
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           Margin="0,15,0,0"/>
+                            </StackPanel>
                         </ScrollViewer>
                     </Grid>
                 </Border>
