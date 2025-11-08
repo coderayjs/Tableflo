@@ -17,42 +17,14 @@
                     <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
                     <Setter Property="BorderBrush" Value="Transparent"/>
                     <Setter Property="Padding" Value="12,10"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="ComboBoxItem">
-                                <Border Background="{TemplateBinding Background}"
-                                        BorderBrush="{TemplateBinding BorderBrush}"
-                                        BorderThickness="{TemplateBinding BorderThickness}"
-                                        Padding="{TemplateBinding Padding}">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <ContentPresenter Grid.Column="0"
-                                                          Content="{TemplateBinding Content}"
-                                                          VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="1"
-                                                   Text="✓"
-                                                   FontSize="16"
-                                                   FontWeight="Bold"
-                                                   Foreground="{StaticResource AccentOrangeBrush}"
-                                                   VerticalAlignment="Center"
-                                                   Margin="10,0,0,0"
-                                                   Visibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=IsSelected, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                    </Grid>
-                                </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="{StaticResource BackgroundHoverBrush}"/>
-                                    </Trigger>
-                                    <Trigger Property="IsSelected" Value="True">
-                                        <Setter Property="Background" Value="{StaticResource BackgroundHoverBrush}"/>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{StaticResource BackgroundHoverBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="{StaticResource BackgroundHoverBrush}"/>
+                        </Trigger>
+                    </Style.Triggers>
                 </Style>
             </Setter.Value>
         </Setter>
