@@ -190,6 +190,19 @@ public class MainViewModel : ViewModelBase
                     ? (int)(DateTime.UtcNow - currentAssignment.StartTime).TotalMinutes
                     : 0;
 
+                // Format time display (hours and minutes, or just minutes if < 60)
+                string timeDisplay;
+                if (timeInMinutes >= 60)
+                {
+                    int hours = timeInMinutes / 60;
+                    int minutes = timeInMinutes % 60;
+                    timeDisplay = $"{hours}h {minutes}m";
+                }
+                else
+                {
+                    timeDisplay = $"{timeInMinutes}m";
+                }
+
                 currentTablesList.Add(new TableRowViewModel
                 {
                     TableId = table.Id,
@@ -197,13 +210,13 @@ public class MainViewModel : ViewModelBase
                     GameType = table.GameType.ToString(),
                     CurrentDealerName = currentDealerName,
                     CurrentDealerId = currentDealerId,
-                    TimeInMinutes = $"{timeInMinutes}m",
+                    TimeInMinutes = timeDisplay,
                     ActualMinutes = timeInMinutes
                 });
 
                 // Next dealer info (replacement)
                 var nextAssignment = table.NextAssignments.FirstOrDefault();
-                var nextDealerName = nextAssignment?.Dealer?.Employee?.FullName ?? "TBD";
+                var nextDealerName = nextAssignment?.Dealer?.Employee?.FullName ?? "—";
                 var nextDealerId = nextAssignment?.DealerId ?? 0;
 
                 nextTablesList.Add(new TableRowViewModel

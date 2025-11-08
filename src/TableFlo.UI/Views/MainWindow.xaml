@@ -179,66 +179,192 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 
-                <!-- Relief Pool Stats Bar -->
-                <Border Grid.Row="0" 
-                        Background="{StaticResource BackgroundPanelBrush}"
-                        BorderBrush="{StaticResource LineBrush}"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="20,15">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="📋 Available Dealers" 
-                                       FontSize="12" 
-                                       Foreground="{StaticResource TextMutedBrush}"
-                                       Margin="0,0,0,5"/>
-                            <TextBlock Text="{Binding AvailableDealers}" 
-                                       FontSize="28" 
+                <!-- Professional Stats Cards -->
+                <UniformGrid Grid.Row="0" Columns="4" Margin="0,0,0,20">
+                    <!-- Available Dealers Card -->
+                    <Border Margin="0,0,10,0"
+                            Background="#0F1A24"
+                            BorderBrush="#1A2A3A"
+                            BorderThickness="1"
+                            CornerRadius="12"
+                            Padding="20,18">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,8">
+                                <Border Background="#10B98120"
+                                        CornerRadius="6"
+                                        Padding="8"
+                                        Width="36"
+                                        Height="36"
+                                        VerticalAlignment="Center"
+                                        Margin="0,0,12,0">
+                                    <TextBlock Text="👥" 
+                                               FontSize="18"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Available" 
+                                               FontSize="11" 
+                                               FontWeight="SemiBold"
+                                               Foreground="{StaticResource TextMutedBrush}"
+                                               TextTransform="Uppercase"
+                                               LetterSpacing="1"/>
+                                    <TextBlock Text="Dealers" 
+                                               FontSize="11" 
+                                               Foreground="{StaticResource TextMutedBrush}"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <TextBlock Grid.Row="1"
+                                       Text="{Binding AvailableDealers}" 
+                                       FontSize="36" 
                                        FontWeight="Bold"
-                                       Foreground="#10B981"/>
-                        </StackPanel>
-                        
-                        <StackPanel Grid.Column="1">
-                            <TextBlock Text="🎰 Currently Dealing" 
-                                       FontSize="12" 
-                                       Foreground="{StaticResource TextMutedBrush}"
-                                       Margin="0,0,0,5"/>
-                            <TextBlock Text="{Binding DealingCount}" 
-                                       FontSize="28" 
+                                       Foreground="#10B981"
+                                       Margin="0,4,0,0"/>
+                        </Grid>
+                    </Border>
+                    
+                    <!-- Currently Dealing Card -->
+                    <Border Margin="5,0,5,0"
+                            Background="#0F1A24"
+                            BorderBrush="#1A2A3A"
+                            BorderThickness="1"
+                            CornerRadius="12"
+                            Padding="20,18">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,8">
+                                <Border Background="#C96B2C20"
+                                        CornerRadius="6"
+                                        Padding="8"
+                                        Width="36"
+                                        Height="36"
+                                        VerticalAlignment="Center"
+                                        Margin="0,0,12,0">
+                                    <TextBlock Text="🎰" 
+                                               FontSize="18"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Currently" 
+                                               FontSize="11" 
+                                               FontWeight="SemiBold"
+                                               Foreground="{StaticResource TextMutedBrush}"
+                                               TextTransform="Uppercase"
+                                               LetterSpacing="1"/>
+                                    <TextBlock Text="Dealing" 
+                                               FontSize="11" 
+                                               Foreground="{StaticResource TextMutedBrush}"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <TextBlock Grid.Row="1"
+                                       Text="{Binding DealingCount}" 
+                                       FontSize="36" 
                                        FontWeight="Bold"
-                                       Foreground="{StaticResource AccentOrangeBrush}"/>
-                        </StackPanel>
-                        
-                        <StackPanel Grid.Column="2">
-                            <TextBlock Text="⏸️ On Break" 
-                                       FontSize="12" 
-                                       Foreground="{StaticResource TextMutedBrush}"
-                                       Margin="0,0,0,5"/>
-                            <TextBlock Text="{Binding DealersOnBreak.Count}" 
-                                       FontSize="28" 
+                                       Foreground="{StaticResource AccentOrangeBrush}"
+                                       Margin="0,4,0,0"/>
+                        </Grid>
+                    </Border>
+                    
+                    <!-- On Break Card -->
+                    <Border Margin="5,0,5,0"
+                            Background="#0F1A24"
+                            BorderBrush="#1A2A3A"
+                            BorderThickness="1"
+                            CornerRadius="12"
+                            Padding="20,18">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,8">
+                                <Border Background="#F59E0B20"
+                                        CornerRadius="6"
+                                        Padding="8"
+                                        Width="36"
+                                        Height="36"
+                                        VerticalAlignment="Center"
+                                        Margin="0,0,12,0">
+                                    <TextBlock Text="⏸️" 
+                                               FontSize="18"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="On" 
+                                               FontSize="11" 
+                                               FontWeight="SemiBold"
+                                               Foreground="{StaticResource TextMutedBrush}"
+                                               TextTransform="Uppercase"
+                                               LetterSpacing="1"/>
+                                    <TextBlock Text="Break" 
+                                               FontSize="11" 
+                                               Foreground="{StaticResource TextMutedBrush}"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <TextBlock Grid.Row="1"
+                                       Text="{Binding DealersOnBreak.Count}" 
+                                       FontSize="36" 
                                        FontWeight="Bold"
-                                       Foreground="#F59E0B"/>
-                        </StackPanel>
-                        
-                        <StackPanel Grid.Column="3">
-                            <TextBlock Text="🆘 Relief Needed" 
-                                       FontSize="12" 
-                                       Foreground="{StaticResource TextMutedBrush}"
-                                       Margin="0,0,0,5"/>
-                            <TextBlock Text="{Binding ReliefNeeded}" 
-                                       FontSize="28" 
+                                       Foreground="#F59E0B"
+                                       Margin="0,4,0,0"/>
+                        </Grid>
+                    </Border>
+                    
+                    <!-- Relief Needed Card -->
+                    <Border Margin="10,0,0,0"
+                            Background="#0F1A24"
+                            BorderBrush="#1A2A3A"
+                            BorderThickness="1"
+                            CornerRadius="12"
+                            Padding="20,18">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,8">
+                                <Border Background="#DC262620"
+                                        CornerRadius="6"
+                                        Padding="8"
+                                        Width="36"
+                                        Height="36"
+                                        VerticalAlignment="Center"
+                                        Margin="0,0,12,0">
+                                    <TextBlock Text="🆘" 
+                                               FontSize="18"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Relief" 
+                                               FontSize="11" 
+                                               FontWeight="SemiBold"
+                                               Foreground="{StaticResource TextMutedBrush}"
+                                               TextTransform="Uppercase"
+                                               LetterSpacing="1"/>
+                                    <TextBlock Text="Needed" 
+                                               FontSize="11" 
+                                               Foreground="{StaticResource TextMutedBrush}"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <TextBlock Grid.Row="1"
+                                       Text="{Binding ReliefNeeded}" 
+                                       FontSize="36" 
                                        FontWeight="Bold"
-                                       Foreground="#DC2626"/>
-                        </StackPanel>
-                    </Grid>
-                </Border>
+                                       Foreground="#DC2626"
+                                       Margin="0,4,0,0"/>
+                        </Grid>
+                    </Border>
+                </UniformGrid>
                 
                 <!-- Main 4-Section Grid -->
                 <Grid Grid.Row="2">
@@ -254,10 +380,10 @@
                 
                 <!-- Section 1: Current Dealers -->
                 <Border Grid.Column="0" 
-                        Background="{StaticResource BackgroundPanelBrush}"
-                        BorderBrush="{StaticResource LineBrush}"
+                        Background="#0F1A24"
+                        BorderBrush="#1A2A3A"
                         BorderThickness="1"
-                        CornerRadius="12">
+                        CornerRadius="16">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -266,13 +392,32 @@
                         </Grid.RowDefinitions>
                         
                         <Border Grid.Row="0" 
-                                BorderBrush="{StaticResource LineBrush}"
+                                BorderBrush="#1A2A3A"
                                 BorderThickness="0,0,0,1"
-                                Padding="14,12">
-                            <TextBlock Text="Current Dealers" 
-                                       FontSize="14" 
-                                       FontWeight="SemiBold"
-                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                                Padding="20,16"
+                                Background="#0A1219">
+                            <Grid>
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Background="#C96B2C30"
+                                            CornerRadius="8"
+                                            Padding="10,8"
+                                            Margin="0,0,12,0">
+                                        <TextBlock Text="📊" 
+                                                   FontSize="20"
+                                                   VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Current Dealers" 
+                                                   FontSize="16" 
+                                                   FontWeight="Bold"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"/>
+                                        <TextBlock Text="Active table assignments" 
+                                                   FontSize="11" 
+                                                   Foreground="{StaticResource TextMutedBrush}"
+                                                   Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
                         </Border>
                         
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
@@ -321,22 +466,28 @@
                         </ScrollViewer>
                         
                         <Border Grid.Row="2" 
-                                BorderBrush="{StaticResource LineBrush}"
+                                BorderBrush="#1A2A3A"
                                 BorderThickness="0,1,0,0"
-                                Padding="10">
+                                Padding="16,14"
+                                Background="#0A1219">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button Content="Generate AI Schedule" 
+                                <Button Content="🤖 Generate Schedule" 
                                         Command="{Binding GenerateScheduleCommand}"
                                         Style="{StaticResource PrimaryButton}"
-                                        Margin="5"/>
-                                <Button Content="Export" 
+                                        Margin="0,0,8,0"
+                                        Padding="16,10"
+                                        FontSize="13"/>
+                                <Button Content="📥 Export" 
                                         Command="{Binding ExportScheduleCommand}"
                                         Style="{StaticResource SecondaryButton}"
-                                        Margin="5"/>
-                                <Button Content="Refresh" 
+                                        Margin="0,0,8,0"
+                                        Padding="16,10"
+                                        FontSize="13"/>
+                                <Button Content="🔄 Refresh" 
                                         Command="{Binding RefreshCommand}"
                                         Style="{StaticResource SecondaryButton}"
-                                        Margin="5"/>
+                                        Padding="16,10"
+                                        FontSize="13"/>
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -344,10 +495,10 @@
                 
                 <!-- Section 2: Next Dealers -->
                 <Border Grid.Column="2" 
-                        Background="{StaticResource BackgroundPanelBrush}"
-                        BorderBrush="{StaticResource LineBrush}"
+                        Background="#0F1A24"
+                        BorderBrush="#1A2A3A"
                         BorderThickness="1"
-                        CornerRadius="12">
+                        CornerRadius="16">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -356,13 +507,30 @@
                         </Grid.RowDefinitions>
                         
                         <Border Grid.Row="0" 
-                                BorderBrush="{StaticResource LineBrush}"
+                                BorderBrush="#1A2A3A"
                                 BorderThickness="0,0,0,1"
-                                Padding="14,12">
-                            <TextBlock Text="Next Dealers" 
-                                       FontSize="14" 
-                                       FontWeight="SemiBold"
-                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                                Padding="20,16"
+                                Background="#0A1219">
+                            <StackPanel Orientation="Horizontal">
+                                <Border Background="#D4A57430"
+                                        CornerRadius="8"
+                                        Padding="10,8"
+                                        Margin="0,0,12,0">
+                                    <TextBlock Text="⏭️" 
+                                               FontSize="20"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Next Dealers" 
+                                               FontSize="16" 
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                                    <TextBlock Text="Scheduled rotations" 
+                                               FontSize="11" 
+                                               Foreground="{StaticResource TextMutedBrush}"
+                                               Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </StackPanel>
                         </Border>
                         
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
@@ -396,24 +564,27 @@
                         </ScrollViewer>
                         
                         <Border Grid.Row="2" 
-                                BorderBrush="{StaticResource LineBrush}"
+                                BorderBrush="#1A2A3A"
                                 BorderThickness="0,1,0,0"
-                                Padding="10">
-                            <Button Content="Push All Tables" 
+                                Padding="16,14"
+                                Background="#0A1219">
+                            <Button Content="▶️ Push All Tables" 
                                     Command="{Binding PushAllTablesCommand}"
                                     Style="{StaticResource PrimaryButton}"
-                                    HorizontalAlignment="Right"
-                                    Margin="5"/>
+                                    HorizontalAlignment="Stretch"
+                                    Padding="16,10"
+                                    FontSize="13"
+                                    FontWeight="SemiBold"/>
                         </Border>
                     </Grid>
                 </Border>
                 
                 <!-- Section 3: On Break -->
                 <Border Grid.Column="4" 
-                        Background="{StaticResource BackgroundPanelBrush}"
-                        BorderBrush="{StaticResource LineBrush}"
+                        Background="#0F1A24"
+                        BorderBrush="#1A2A3A"
                         BorderThickness="1"
-                        CornerRadius="12">
+                        CornerRadius="16">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -422,44 +593,80 @@
                         </Grid.RowDefinitions>
                         
                         <Border Grid.Row="0" 
-                                BorderBrush="{StaticResource LineBrush}"
+                                BorderBrush="#1A2A3A"
                                 BorderThickness="0,0,0,1"
-                                Padding="14,12">
-                            <TextBlock Text="Dealers On Break" 
-                                       FontSize="14" 
-                                       FontWeight="SemiBold"
-                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                                Padding="20,16"
+                                Background="#0A1219">
+                            <StackPanel Orientation="Horizontal">
+                                <Border Background="#F59E0B30"
+                                        CornerRadius="8"
+                                        Padding="10,8"
+                                        Margin="0,0,12,0">
+                                    <TextBlock Text="⏸️" 
+                                               FontSize="20"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="On Break" 
+                                               FontSize="16" 
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                                    <TextBlock Text="{Binding DealersOnBreak.Count, StringFormat='{}{0} dealers'}" 
+                                               FontSize="11" 
+                                               Foreground="{StaticResource TextMutedBrush}"
+                                               Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </StackPanel>
                         </Border>
                         
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                             <ItemsControl x:Name="BreakListControl" 
                                           ItemsSource="{Binding DealersOnBreak}"
-                                          Margin="10">
+                                          Margin="12,12">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border Background="#1B2633" 
-                                                BorderBrush="{StaticResource LineBrush}"
+                                        <Border Background="#0A1219" 
+                                                BorderBrush="#1A2A3A"
                                                 BorderThickness="1"
-                                                CornerRadius="999"
-                                                Padding="10,6"
+                                                CornerRadius="10"
+                                                Padding="12,10"
                                                 Margin="0,0,0,8">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Grid.Column="0" 
-                                                           Text="{Binding DealerName}" 
-                                                           Foreground="{StaticResource TextPrimaryBrush}"
-                                                           FontSize="12"
-                                                           VerticalAlignment="Center"/>
-                                                <Button Grid.Column="1" 
-                                                        Content="×" 
+                                                <Border Grid.Column="0"
+                                                        Background="#F59E0B20"
+                                                        CornerRadius="6"
+                                                        Width="32"
+                                                        Height="32"
+                                                        Margin="0,0,10,0"
+                                                        VerticalAlignment="Center">
+                                                    <TextBlock Text="⏸️" 
+                                                               FontSize="14"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"/>
+                                                </Border>
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding DealerName}" 
+                                                               Foreground="{StaticResource TextPrimaryBrush}"
+                                                               FontSize="13"
+                                                               FontWeight="SemiBold"/>
+                                                    <TextBlock Text="{Binding EmployeeNumber, StringFormat='#{0}'}" 
+                                                               Foreground="{StaticResource TextMutedBrush}"
+                                                               FontSize="11"
+                                                               Margin="0,2,0,0"/>
+                                                </StackPanel>
+                                                <Button Grid.Column="2" 
+                                                        Content="↩️ Return" 
                                                         Command="{Binding DataContext.ReturnFromBreakCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                         CommandParameter="{Binding DealerId}"
                                                         Style="{StaticResource SecondaryButton}"
-                                                        Padding="6,2"
-                                                        FontSize="11"/>
+                                                        Padding="10,6"
+                                                        FontSize="11"
+                                                        VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
                                     </DataTemplate>
@@ -468,17 +675,19 @@
                         </ScrollViewer>
                         
                         <Border Grid.Row="2" 
-                                BorderBrush="{StaticResource LineBrush}"
+                                BorderBrush="#1A2A3A"
                                 BorderThickness="0,1,0,0"
-                                Padding="10">
+                                Padding="16,14"
+                                Background="#0A1219">
                             <StackPanel>
-                                <Grid Margin="0,0,0,8">
+                                <Grid Margin="0,0,0,10">
                                     <TextBox x:Name="NewBreakDealerTextBox"
                                              Text="{Binding NewBreakDealerNumber, UpdateSourceTrigger=PropertyChanged}"
                                              Style="{StaticResource ModernTextBox}"
                                              Padding="12,8"
                                              FontSize="13"
-                                             Height="36"/>
+                                             Height="38"
+                                             CornerRadius="8"/>
                                     <TextBlock Text="Dealer employee #"
                                                Foreground="{StaticResource TextMutedBrush}"
                                                FontSize="13"
@@ -500,10 +709,13 @@
                                         </TextBlock.Style>
                                     </TextBlock>
                                 </Grid>
-                                <Button Content="Send to Break" 
+                                <Button Content="⏸️ Send to Break" 
                                         Command="{Binding SendToBreakCommand}"
-                                        Style="{StaticResource SecondaryButton}"
-                                        HorizontalAlignment="Stretch"/>
+                                        Style="{StaticResource PrimaryButton}"
+                                        HorizontalAlignment="Stretch"
+                                        Padding="16,10"
+                                        FontSize="13"
+                                        FontWeight="SemiBold"/>
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -511,10 +723,10 @@
                 
                 <!-- Section 4: Rotation Strings -->
                 <Border Grid.Column="6" 
-                        Background="{StaticResource BackgroundPanelBrush}"
-                        BorderBrush="{StaticResource LineBrush}"
+                        Background="#0F1A24"
+                        BorderBrush="#1A2A3A"
                         BorderThickness="1"
-                        CornerRadius="12">
+                        CornerRadius="16">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -522,43 +734,61 @@
                         </Grid.RowDefinitions>
                         
                         <Border Grid.Row="0" 
-                                BorderBrush="{StaticResource LineBrush}"
+                                BorderBrush="#1A2A3A"
                                 BorderThickness="0,0,0,1"
-                                Padding="14,12">
-                            <TextBlock Text="Rotation Strings" 
-                                       FontSize="14" 
-                                       FontWeight="SemiBold"
-                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                                Padding="20,16"
+                                Background="#0A1219">
+                            <StackPanel Orientation="Horizontal">
+                                <Border Background="#D4A57430"
+                                        CornerRadius="8"
+                                        Padding="10,8"
+                                        Margin="0,0,12,0">
+                                    <TextBlock Text="🔄" 
+                                               FontSize="20"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Rotation Strings" 
+                                               FontSize="16" 
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource TextPrimaryBrush}"/>
+                                    <TextBlock Text="Predefined shifts" 
+                                               FontSize="11" 
+                                               Foreground="{StaticResource TextMutedBrush}"
+                                               Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </StackPanel>
                         </Border>
                         
                         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                            <ItemsControl ItemsSource="{Binding RotationStrings}" Margin="10">
+                            <ItemsControl ItemsSource="{Binding RotationStrings}" Margin="12,12">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border Background="#1B2633" 
-                                                BorderBrush="{StaticResource LineBrush}"
+                                        <Border Background="#0A1219" 
+                                                BorderBrush="#1A2A3A"
                                                 BorderThickness="1"
-                                                CornerRadius="8"
-                                                Padding="12,10"
-                                                Margin="0,0,0,8">
+                                                CornerRadius="10"
+                                                Padding="14,12"
+                                                Margin="0,0,0,10">
                                             <StackPanel>
                                                 <TextBlock Text="{Binding Name}" 
-                                                           FontSize="13" 
-                                                           FontWeight="SemiBold"
+                                                           FontSize="14" 
+                                                           FontWeight="Bold"
                                                            Foreground="{StaticResource AccentGoldBrush}"
-                                                           Margin="0,0,0,4"/>
-                                                <TextBlock FontSize="11" 
+                                                           Margin="0,0,0,6"/>
+                                                <TextBlock FontSize="12" 
                                                            Foreground="{StaticResource TextMutedBrush}"
-                                                           Margin="0,0,0,8">
+                                                           Margin="0,0,0,10">
                                                     <Run Text="{Binding DealerCount}"/>
                                                     <Run Text=" dealers"/>
                                                 </TextBlock>
-                                                <Button Content="Go to String" 
+                                                <Button Content="▶️ Execute Rotation" 
                                                         Command="{Binding DataContext.ExecuteStringRotationCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                         CommandParameter="{Binding Id}"
                                                         Style="{StaticResource PrimaryButton}"
-                                                        Padding="8,4"
-                                                        FontSize="11"
+                                                        Padding="12,8"
+                                                        FontSize="12"
+                                                        FontWeight="SemiBold"
                                                         HorizontalAlignment="Stretch"/>
                                             </StackPanel>
                                         </Border>
