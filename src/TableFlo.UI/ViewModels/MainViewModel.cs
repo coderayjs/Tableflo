@@ -48,6 +48,7 @@ public class MainViewModel : ViewModelBase
         ReturnFromBreakCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand<int>(ReturnFromBreakAsync);
         AssignDealerToTableCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand<string>(AssignDealerToTableAsync);
         ExecuteStringRotationCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand<int>(ExecuteStringRotationAsync);
+        ExportScheduleCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand(ExportScheduleAsync);
         RefreshCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand(LoadDashboardDataAsync);
 
         // Load data on startup
@@ -146,6 +147,7 @@ public class MainViewModel : ViewModelBase
     public ICommand ReturnFromBreakCommand { get; }
     public ICommand AssignDealerToTableCommand { get; }
     public ICommand ExecuteStringRotationCommand { get; }
+    public ICommand ExportScheduleCommand { get; }
     public ICommand RefreshCommand { get; }
 
     #endregion
@@ -543,12 +545,73 @@ public class MainViewModel : ViewModelBase
     {
         try
         {
-            // This would show a dialog to select dealers to swap
-            MessageBox.Show("Swap functionality - Select dealers from dialog (coming soon)", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            var table = await _context.Tables
+                .Include(t => t.CurrentAssignments)
+                    .ThenInclude(a => a.Dealer)
+                        .ThenInclude(d => d!.Employee)
+                .FirstOrDefaultAsync(t => t.Id == tableId);
+
+            if (table == null || !table.CurrentAssignments.Any())
+            {
+                MessageBox.Show("No dealer assigned to this table.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            var currentDealer = table.CurrentAssignments.First().Dealer;
+            if (currentDealer == null)
+                return;
+
+            // Get available dealers for swap
+            var availableDealers = await _context.Dealers
+                .Include(d => d.Employee)
+                .Where(d => d.Id != currentDealer.Id && 
+                           (d.Status == DealerStatus.Available || d.Status == DealerStatus.Dealing))
+                .ToListAsync();
+
+            if (!availableDealers.Any())
+            {
+                MessageBox.Show("No available dealers to swap with.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            // Simple swap - get first available dealer (in real app, would show dialog)
+            var swapDealer = availableDealers.First();
+            
+            var result = MessageBox.Show(
+                $"Swap {currentDealer.Employee?.FullName} with {swapDealer.Employee?.FullName}?",
+                "Confirm Swap",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            IsLoading = true;
+            var employeeId = SessionManager.CurrentEmployee?.Id ?? 0;
+
+            // End current assignment
+            var currentAssignment = table.CurrentAssignments.First();
+            currentAssignment.EndTime = DateTime.UtcNow;
+
+            // Assign new dealer
+            await _rotationService.AssignDealerAsync(swapDealer.Id, tableId, true, employeeId);
+
+            await _auditService.LogActionAsync(
+                employeeId,
+                ActionType.ManualOverride,
+                $"Swapped {currentDealer.Employee?.FullName} with {swapDealer.Employee?.FullName} at table {table.TableNumber}"
+            );
+
+            await LoadDashboardDataAsync();
+            MessageBox.Show("Dealers swapped successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception ex)
         {
             MessageBox.Show($"Error swapping dealers: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 
@@ -691,6 +754,87 @@ public class MainViewModel : ViewModelBase
         finally
         {
             IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Export current schedule to text file
+    /// </summary>
+    private async Task ExportScheduleAsync()
+    {
+        try
+        {
+            var saveDialog = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",
+                FileName = $"TableFlo_Schedule_{DateTime.Now:yyyyMMdd_HHmmss}.txt"
+            };
+
+            if (saveDialog.ShowDialog() == true)
+            {
+                var tables = await _context.Tables
+                    .Include(t => t.CurrentAssignments)
+                        .ThenInclude(a => a.Dealer)
+                            .ThenInclude(d => d!.Employee)
+                    .Include(t => t.NextAssignments)
+                        .ThenInclude(a => a.Dealer)
+                            .ThenInclude(d => d!.Employee)
+                    .Where(t => t.Status == Core.Enums.TableStatus.Open)
+                    .OrderBy(t => t.TableNumber)
+                    .ToListAsync();
+
+                var lines = new List<string>
+                {
+                    "TableFlo - Dealer Schedule Export",
+                    $"Generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss}",
+                    "",
+                    "=".PadRight(80, '='),
+                    "CURRENT ASSIGNMENTS",
+                    "=".PadRight(80, '='),
+                    ""
+                };
+
+                foreach (var table in tables)
+                {
+                    var current = table.CurrentAssignments.FirstOrDefault();
+                    var dealerName = current?.Dealer?.Employee?.FullName ?? "No Dealer";
+                    var timeIn = current != null ? (int)(DateTime.UtcNow - current.StartTime).TotalMinutes : 0;
+                    
+                    lines.Add($"Table: {table.TableNumber} ({table.GameType})");
+                    lines.Add($"  Current Dealer: {dealerName}");
+                    lines.Add($"  Time at Table: {timeIn} minutes");
+                    lines.Add("");
+                }
+
+                lines.Add("=".PadRight(80, '='));
+                lines.Add("NEXT ASSIGNMENTS");
+                lines.Add("=".PadRight(80, '='));
+                lines.Add("");
+
+                foreach (var table in tables)
+                {
+                    var next = table.NextAssignments.FirstOrDefault();
+                    var nextDealer = next?.Dealer?.Employee?.FullName ?? "TBD";
+                    
+                    lines.Add($"Table: {table.TableNumber} ({table.GameType})");
+                    lines.Add($"  Next Dealer: {nextDealer}");
+                    lines.Add("");
+                }
+
+                await File.WriteAllLinesAsync(saveDialog.FileName, lines);
+
+                await _auditService.LogActionAsync(
+                    SessionManager.CurrentEmployee?.Id ?? 0,
+                    ActionType.ReportGenerated,
+                    $"Exported schedule to {saveDialog.FileName}"
+                );
+
+                MessageBox.Show($"Schedule exported successfully to:\n{saveDialog.FileName}", "Export Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error exporting schedule: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

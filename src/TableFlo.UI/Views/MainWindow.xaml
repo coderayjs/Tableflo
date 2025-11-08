@@ -233,6 +233,10 @@
                                         Command="{Binding GenerateScheduleCommand}"
                                         Style="{StaticResource PrimaryButton}"
                                         Margin="5"/>
+                                <Button Content="Export" 
+                                        Command="{Binding ExportScheduleCommand}"
+                                        Style="{StaticResource SecondaryButton}"
+                                        Margin="5"/>
                                 <Button Content="Refresh" 
                                         Command="{Binding RefreshCommand}"
                                         Style="{StaticResource SecondaryButton}"
@@ -720,18 +724,11 @@
                                     </Style>
                                 </StackPanel.Style>
                                 
-                                <TextBlock FontSize="18" 
+                                <TextBlock Text="String Details" 
+                                           FontSize="18" 
                                            FontWeight="Bold"
                                            Foreground="{StaticResource TextPrimaryBrush}"
-                                           Margin="0,0,0,20">
-                                    <TextBlock.Text>
-                                        <Binding Path="IsNewString">
-                                            <Binding.Converter>
-                                                <local:BoolToStringConverter TrueValue="New String" FalseValue="Edit String"/>
-                                            </Binding.Converter>
-                                        </Binding>
-                                    </TextBlock.Text>
-                                </TextBlock>
+                                           Margin="0,0,0,20"/>
                                 
                                 <TextBlock Text="Name" 
                                            FontSize="12"

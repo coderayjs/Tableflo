@@ -28,6 +28,7 @@ public class DataSeeder
         await SeedEmployeesAndDealersAsync();
         await SeedTablesAsync();
         await SeedShiftsAsync();
+        await SeedRotationStringsAsync();
         await _context.SaveChangesAsync();
     }
 
@@ -139,6 +140,57 @@ public class DataSeeder
         foreach (var shift in shifts)
         {
             await _context.Shifts.AddAsync(shift);
+        }
+    }
+
+    private async Task SeedRotationStringsAsync()
+    {
+        // Only seed if no strings exist
+        if (await _context.RotationStrings.AnyAsync())
+            return;
+
+        var strings = new List<Core.Models.RotationString>
+        {
+            new Core.Models.RotationString
+            {
+                Name = "Main Floor",
+                Description = "Main casino floor rotation - Blackjack, Roulette, and standard games",
+                IsActive = true,
+                Priority = 1
+            },
+            new Core.Models.RotationString
+            {
+                Name = "Craps",
+                Description = "Craps table rotation - Specialized dealers for Craps games",
+                IsActive = true,
+                Priority = 2
+            },
+            new Core.Models.RotationString
+            {
+                Name = "High Limit",
+                Description = "High limit tables - Premium games with higher betting limits",
+                IsActive = true,
+                Priority = 3
+            },
+            new Core.Models.RotationString
+            {
+                Name = "String 4",
+                Description = "Additional rotation group for overflow or special events",
+                IsActive = true,
+                Priority = 4
+            },
+            new Core.Models.RotationString
+            {
+                Name = "String 5",
+                Description = "Additional rotation group for overflow or special events",
+                IsActive = true,
+                Priority = 5
+            }
+        };
+
+        foreach (var rotationString in strings)
+        {
+            await _context.RotationStrings.AddAsync(rotationString);
         }
     }
 }
