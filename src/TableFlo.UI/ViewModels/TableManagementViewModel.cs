@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using TableFlo.Core.Enums;
 using TableFlo.Core.Models;
+using TableFlo.Data;
 using TableFlo.Data.Interfaces;
 using TableFlo.Services.Interfaces;
 
@@ -18,11 +19,13 @@ public class TableManagementViewModel : ViewModelBase
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IAuditService _auditService;
+    private readonly TableFloDbContext _context;
 
-    public TableManagementViewModel(IUnitOfWork unitOfWork, IAuditService auditService)
+    public TableManagementViewModel(IUnitOfWork unitOfWork, IAuditService auditService, TableFloDbContext context)
     {
         _unitOfWork = unitOfWork;
         _auditService = auditService;
+        _context = context;
 
         // Initialize commands
         AddTableCommand = new CommunityToolkit.Mvvm.Input.RelayCommand(AddTable);
@@ -232,8 +235,16 @@ public class TableManagementViewModel : ViewModelBase
             var table = await _unitOfWork.Tables.GetByIdAsync(SelectedTable.Id);
             if (table != null)
             {
-                var hasActiveAssignments = table.CurrentAssignments.Any(a => a.IsActive) || 
-                                          table.NextAssignments.Any(a => a.IsActive);
+                // Load assignments explicitly
+                await _context.Entry(table)
+                    .Collection(t => t.CurrentAssignments)
+                    .LoadAsync();
+                await _context.Entry(table)
+                    .Collection(t => t.NextAssignments)
+                    .LoadAsync();
+                
+                var hasActiveAssignments = table.CurrentAssignments.Any(a => a.EndTime == null) || 
+                                          table.NextAssignments.Any(a => a.EndTime == null);
 
                 if (hasActiveAssignments)
                 {
@@ -465,8 +476,16 @@ public class TableManagementViewModel : ViewModelBase
                 return;
             }
 
-            var hasActiveAssignments = table.CurrentAssignments.Any(a => a.IsActive) || 
-                                      table.NextAssignments.Any(a => a.IsActive);
+            // Load assignments explicitly
+            await _context.Entry(table)
+                .Collection(t => t.CurrentAssignments)
+                .LoadAsync();
+            await _context.Entry(table)
+                .Collection(t => t.NextAssignments)
+                .LoadAsync();
+
+            var hasActiveAssignments = table.CurrentAssignments.Any(a => a.EndTime == null) || 
+                                      table.NextAssignments.Any(a => a.EndTime == null);
 
             if (hasActiveAssignments)
             {
@@ -579,7 +598,12 @@ public class TableManagementViewModel : ViewModelBase
                     return;
                 }
 
-                var hasActiveAssignments = table.CurrentAssignments.Any(a => a.IsActive);
+                // Load assignments explicitly
+                await _context.Entry(table)
+                    .Collection(t => t.CurrentAssignments)
+                    .LoadAsync();
+
+                var hasActiveAssignments = table.CurrentAssignments.Any(a => a.EndTime == null);
 
                 if (hasActiveAssignments)
                 {
