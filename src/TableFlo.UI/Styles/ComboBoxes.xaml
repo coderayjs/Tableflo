@@ -105,8 +105,7 @@
                                         </Grid.ColumnDefinitions>
                                         <ContentPresenter Grid.Column="0"
                                                           Content="{TemplateBinding Content}"
-                                                          VerticalAlignment="Center"
-                                                          Foreground="{TemplateBinding Foreground}"/>
+                                                          VerticalAlignment="Center"/>
                                         <TextBlock Grid.Column="1"
                                                    Text="✓"
                                                    FontSize="16"
