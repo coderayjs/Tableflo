@@ -199,7 +199,7 @@ public class DealerManagementViewModel : ViewModelBase
                     FullName = employee.FullName,
                     Status = dealer.Status.ToString(),
                     SeniorityLevel = dealer.SeniorityLevel,
-                    PreferredPit = dealer.PreferredPit,
+                    PreferredPit = dealer.PreferredPit ?? string.Empty,
                     ShiftStart = dealer.ShiftStart.ToString(@"hh\:mm"),
                     ShiftEnd = dealer.ShiftEnd.ToString(@"hh\:mm"),
                     Certifications = string.Join(", ", dealer.Certifications.Select(c => c.GameType.ToString()))

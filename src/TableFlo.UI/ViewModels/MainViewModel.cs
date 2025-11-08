@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
@@ -46,7 +47,7 @@ public class MainViewModel : ViewModelBase
         GenerateScheduleCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand(GenerateScheduleAsync);
         SendToBreakCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand(SendToBreakAsync);
         ReturnFromBreakCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand<int>(ReturnFromBreakAsync);
-        AssignDealerToTableCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand<string>(AssignDealerToTableAsync);
+        AssignDealerToTableCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand<string?>(AssignDealerToTableAsync);
         ExecuteStringRotationCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand<int>(ExecuteStringRotationAsync);
         ExportScheduleCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand(ExportScheduleAsync);
         RefreshCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand(LoadDashboardDataAsync);
@@ -283,7 +284,7 @@ public class MainViewModel : ViewModelBase
 
             RotationStrings = stringViewModels;
         }
-        catch (Exception ex)
+        catch
         {
             // Silently fail - strings are optional
         }
@@ -676,10 +677,13 @@ public class MainViewModel : ViewModelBase
     /// <summary>
     /// Assign specific dealer to specific table
     /// </summary>
-    private async Task AssignDealerToTableAsync(string parameters)
+    private async Task AssignDealerToTableAsync(string? parameters)
     {
         try
         {
+            if (string.IsNullOrWhiteSpace(parameters))
+                return;
+
             // Parameters format: "dealerId,tableId"
             var parts = parameters.Split(',');
             if (parts.Length != 2)
