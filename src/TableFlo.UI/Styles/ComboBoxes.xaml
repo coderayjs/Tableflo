@@ -52,8 +52,7 @@
                                           ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
                                           Margin="12,0,30,0"
                                           VerticalAlignment="Center"
-                                          HorizontalAlignment="Left"
-                                          Foreground="{TemplateBinding Foreground}"/>
+                                          HorizontalAlignment="Left"/>
                         <Popup x:Name="PART_Popup"
                                AllowsTransparency="True"
                                Placement="Bottom"
