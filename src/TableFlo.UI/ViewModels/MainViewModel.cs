@@ -98,8 +98,6 @@ public class MainViewModel : ViewModelBase
         set => SetProperty(ref _statusMessage, value);
     }
 
-    #endregion
-
     private int _availableDealers;
     public int AvailableDealers
     {
