@@ -20,6 +20,7 @@ public class MainViewModel : ViewModelBase
     private readonly IRotationService _rotationService;
     private readonly ISchedulingService _schedulingService;
     private readonly IAuditService _auditService;
+    private readonly IRotationStringService _stringService;
     private readonly TableFloDbContext _context;
 
     public MainViewModel(
@@ -27,12 +28,14 @@ public class MainViewModel : ViewModelBase
         IRotationService rotationService,
         ISchedulingService schedulingService,
         IAuditService auditService,
+        IRotationStringService stringService,
         TableFloDbContext context)
     {
         _unitOfWork = unitOfWork;
         _rotationService = rotationService;
         _schedulingService = schedulingService;
         _auditService = auditService;
+        _stringService = stringService;
         _context = context;
 
         // Initialize commands
@@ -44,6 +47,7 @@ public class MainViewModel : ViewModelBase
         SendToBreakCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand(SendToBreakAsync);
         ReturnFromBreakCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand<int>(ReturnFromBreakAsync);
         AssignDealerToTableCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand<string>(AssignDealerToTableAsync);
+        ExecuteStringRotationCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand<int>(ExecuteStringRotationAsync);
         RefreshCommand = new CommunityToolkit.Mvvm.Input.AsyncRelayCommand(LoadDashboardDataAsync);
 
         // Load data on startup
@@ -124,6 +128,13 @@ public class MainViewModel : ViewModelBase
         set => SetProperty(ref _selectedCurrentTable, value);
     }
 
+    private ObservableCollection<RotationStringViewModel> _rotationStrings = new();
+    public ObservableCollection<RotationStringViewModel> RotationStrings
+    {
+        get => _rotationStrings;
+        set => SetProperty(ref _rotationStrings, value);
+    }
+
     #endregion
 
     #region Commands
@@ -136,6 +147,7 @@ public class MainViewModel : ViewModelBase
     public ICommand SendToBreakCommand { get; }
     public ICommand ReturnFromBreakCommand { get; }
     public ICommand AssignDealerToTableCommand { get; }
+    public ICommand ExecuteStringRotationCommand { get; }
     public ICommand RefreshCommand { get; }
 
     #endregion
@@ -233,6 +245,9 @@ public class MainViewModel : ViewModelBase
             ReliefNeeded = tables.Count - DealingCount; // Tables without dealers
             
             StatusMessage = $"Loaded {tables.Count} tables | {AvailableDealers} available | {DealingCount} dealing | {dealersOnBreak.Count()} on break";
+            
+            // Load rotation strings
+            await LoadRotationStringsAsync();
         }
         catch (Exception ex)
         {
@@ -241,6 +256,36 @@ public class MainViewModel : ViewModelBase
         finally
         {
             IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Load rotation strings
+    /// </summary>
+    private async Task LoadRotationStringsAsync()
+    {
+        try
+        {
+            var strings = await _stringService.GetAllStringsAsync();
+            var stringViewModels = new ObservableCollection<RotationStringViewModel>();
+
+            foreach (var str in strings)
+            {
+                var dealerCount = str.DealerAssignments.Count(dsa => dsa.IsActive);
+                stringViewModels.Add(new RotationStringViewModel
+                {
+                    Id = str.Id,
+                    Name = str.Name,
+                    Description = str.Description,
+                    DealerCount = dealerCount
+                });
+            }
+
+            RotationStrings = stringViewModels;
+        }
+        catch (Exception ex)
+        {
+            // Silently fail - strings are optional
         }
     }
 
@@ -606,6 +651,51 @@ public class MainViewModel : ViewModelBase
         }
     }
 
+    /// <summary>
+    /// Execute rotation for a specific string
+    /// </summary>
+    private async Task ExecuteStringRotationAsync(int stringId)
+    {
+        try
+        {
+            var rotationString = await _stringService.GetStringByIdAsync(stringId);
+            if (rotationString == null)
+                return;
+
+            var result = MessageBox.Show(
+                $"Execute rotation for '{rotationString.Name}'?\n\nThis will assign all dealers in this string to their designated tables.",
+                "Confirm String Rotation",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            IsLoading = true;
+            var employeeId = SessionManager.CurrentEmployee?.Id ?? 0;
+
+            var success = await _stringService.ExecuteStringRotationAsync(stringId, employeeId);
+
+            if (success)
+            {
+                await LoadDashboardDataAsync();
+                MessageBox.Show($"'{rotationString.Name}' rotation executed successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show("Failed to execute string rotation.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error executing string rotation: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
     #endregion
 }
 
@@ -634,4 +724,15 @@ public class DealerBreakViewModel
     public int DealerId { get; set; }
     public string DealerName { get; set; } = string.Empty;
     public string EmployeeNumber { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// ViewModel for rotation strings
+/// </summary>
+public class RotationStringViewModel
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public int DealerCount { get; set; }
 }

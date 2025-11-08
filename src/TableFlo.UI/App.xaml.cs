@@ -62,6 +62,7 @@ public partial class App : Application
                 services.AddScoped<IAuditService, AuditService>();
                 services.AddScoped<ISchedulingService, SchedulingService>();
                 services.AddScoped<IRotationService, RotationService>();
+                services.AddScoped<IRotationStringService, RotationStringService>();
 
                 // ViewModels
                 services.AddTransient<LoginViewModel>();

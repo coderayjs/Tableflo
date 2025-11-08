@@ -20,6 +20,8 @@ public class TableFloDbContext : DbContext
     public DbSet<BreakRecord> BreakRecords => Set<BreakRecord>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<Shift> Shifts => Set<Shift>();
+    public DbSet<RotationString> RotationStrings => Set<RotationString>();
+    public DbSet<DealerStringAssignment> DealerStringAssignments => Set<DealerStringAssignment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -122,6 +124,30 @@ public class TableFloDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.ShiftName).IsRequired().HasMaxLength(100);
+        });
+
+        // RotationString configuration
+        modelBuilder.Entity<RotationString>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.HasIndex(e => e.Name).IsUnique();
+            
+            entity.HasMany(rs => rs.DealerAssignments)
+                  .WithOne(dsa => dsa.RotationString)
+                  .HasForeignKey(dsa => dsa.RotationStringId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // DealerStringAssignment configuration
+        modelBuilder.Entity<DealerStringAssignment>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasOne(dsa => dsa.Dealer)
+                  .WithMany()
+                  .HasForeignKey(dsa => dsa.DealerId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
