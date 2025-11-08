@@ -57,13 +57,14 @@
                                AllowsTransparency="True"
                                Placement="Bottom"
                                PlacementTarget="{Binding ElementName=ToggleButton}"
-                               StaysOpen="False">
-                            <Border Background="{StaticResource BackgroundPanelBrush}"
+                               IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}">
+                            <Border x:Name="DropDownBorder"
+                                    Background="{StaticResource BackgroundPanelBrush}"
                                     BorderBrush="{StaticResource LineBrush}"
                                     BorderThickness="1"
                                     CornerRadius="4"
                                     MaxHeight="300">
-                                <ScrollViewer>
+                                <ScrollViewer x:Name="DropDownScrollViewer">
                                     <ItemsPresenter/>
                                 </ScrollViewer>
                             </Border>

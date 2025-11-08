@@ -269,7 +269,7 @@
                                 BorderBrush="{StaticResource LineBrush}"
                                 BorderThickness="0,0,0,1"
                                 Padding="14,12">
-                            <TextBlock Text="Section 1 — Tables (Current Dealer)" 
+                            <TextBlock Text="Current Dealers" 
                                        FontSize="14" 
                                        FontWeight="SemiBold"
                                        Foreground="{StaticResource TextPrimaryBrush}"/>
@@ -359,7 +359,7 @@
                                 BorderBrush="{StaticResource LineBrush}"
                                 BorderThickness="0,0,0,1"
                                 Padding="14,12">
-                            <TextBlock Text="Section 2 — Breaking Dealer (Next Push)" 
+                            <TextBlock Text="Next Dealers" 
                                        FontSize="14" 
                                        FontWeight="SemiBold"
                                        Foreground="{StaticResource TextPrimaryBrush}"/>
@@ -425,7 +425,7 @@
                                 BorderBrush="{StaticResource LineBrush}"
                                 BorderThickness="0,0,0,1"
                                 Padding="14,12">
-                            <TextBlock Text="Section 3 — On Break" 
+                            <TextBlock Text="Dealers On Break" 
                                        FontSize="14" 
                                        FontWeight="SemiBold"
                                        Foreground="{StaticResource TextPrimaryBrush}"/>
@@ -472,10 +472,34 @@
                                 BorderThickness="0,1,0,0"
                                 Padding="10">
                             <StackPanel>
-                                <TextBox x:Name="NewBreakDealerTextBox"
-                                         Text="{Binding NewBreakDealerNumber, UpdateSourceTrigger=PropertyChanged}"
-                                         Style="{StaticResource ModernTextBox}"
-                                         Margin="0,0,0,8"/>
+                                <Grid Margin="0,0,0,8">
+                                    <TextBox x:Name="NewBreakDealerTextBox"
+                                             Text="{Binding NewBreakDealerNumber, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource ModernTextBox}"
+                                             Padding="12,8"
+                                             FontSize="13"
+                                             Height="36"/>
+                                    <TextBlock Text="Dealer employee #"
+                                               Foreground="{StaticResource TextMutedBrush}"
+                                               FontSize="13"
+                                               VerticalAlignment="Center"
+                                               Margin="12,0,0,0"
+                                               IsHitTestVisible="False">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Text, ElementName=NewBreakDealerTextBox}" Value="">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Text, ElementName=NewBreakDealerTextBox}" Value="{x:Null}">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Grid>
                                 <Button Content="Send to Break" 
                                         Command="{Binding SendToBreakCommand}"
                                         Style="{StaticResource SecondaryButton}"
